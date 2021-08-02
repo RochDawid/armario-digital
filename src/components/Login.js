@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext, useState } from "react";
 import {
   TouchableWithoutFeedback,
   Keyboard,
@@ -8,31 +8,30 @@ import {
   View,
   Button,
 } from "react-native";
-import { StatusBar } from "expo-status-bar";
-import Splash from "./Splash";
+import Drop from "./Drop";
+import { AuthContext } from '../context/authContext';
 
-export default function Login() {
-  const handleLogin = () => {
-    console.log("Logged in");
-  };
+export default function Login({ navigation }) {
+  const { signIn } = useContext(AuthContext);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View>
-        <StatusBar style="light" />
-        <Splash />
-        <Text style={styles.header}>Bienvenido a My Closet</Text>
+        <Drop />
+        <Text style={styles.header}>Bienvenido a Armario Digital</Text>
         <Text style={styles.p}>
-          Por favor, inicia sesión o regístrate para entrar a tu armario
+          Por favor, inicia sesión para entrar a tu armario
         </Text>
         <View style={styles.inputs}>
           <View style={styles.input}>
             <Text style={styles.inputText}>Correo electrónico</Text>
-            <TextInput style={styles.inputField} />
+            <TextInput style={styles.inputField} defaultValue={email} onChangeText={email => setEmail(email)} />
           </View>
           <View style={styles.input}>
             <Text style={styles.inputText}>Contraseña</Text>
-            <TextInput style={styles.inputField} secureTextEntry={true} />
+            <TextInput style={styles.inputField} secureTextEntry={true} defaultValue={password} onChangeText={pass => setPassword(pass)} />
           </View>
         </View>
 
@@ -41,11 +40,14 @@ export default function Login() {
             <Button
               title="Iniciar sesión"
               color="white"
-              onPress={handleLogin}
+              onPress={() => {
+                signIn();
+                navigation.navigate('Main');
+              }}
             />
           </View>
           <View style={styles.button2}>
-            <Button title="Registrarse" color="#3498db" onPress={handleLogin} />
+            <Button title="Registrarse" color="#3498db" onPress={() => navigation.navigate('Register')} />
           </View>
         </View>
       </View>
@@ -59,7 +61,7 @@ const styles = StyleSheet.create({
     color: "white",
     fontWeight: "800",
     fontSize: 35,
-    width: "65%",
+    width: "85%",
     lineHeight: 50,
     paddingHorizontal: 25,
   },
@@ -67,14 +69,14 @@ const styles = StyleSheet.create({
     marginTop: 70,
     color: "white",
     paddingHorizontal: 25,
-    width: "70%",
+    width: "60%",
   },
   inputs: {
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 125,
+    marginTop: 110,
   },
   input: {
     display: "flex",

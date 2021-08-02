@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "my-closet",
-    "slug": "my-closet",
+    "name": "armario-digital",
+    "slug": "armario-digital",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
