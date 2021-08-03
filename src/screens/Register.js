@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import {
   TouchableWithoutFeedback,
   Keyboard,
@@ -9,12 +9,27 @@ import {
   Button,
 } from "react-native";
 import Drop from "./Drop";
-import { AuthContext } from '../context/authContext';
+import { auth } from "../others/firebase";
 
 export default function Register({ navigation }) {
-  const { signUp } = useContext(AuthContext);
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const register = () => {
+    auth
+      .createUserWithEmailAndPassword(email, password)
+      .then((authUser) => {
+        authUser.user.updateProfile({ displayName: name }).then(() => {
+          navigation.replace("Home");
+        });
+      })
+      .catch(() =>
+        alert(
+          "Ocurrió un error, por favor comprueba que no exista una cuenta ya asociada al correo introducido y que los datos tengan el formato adecuado."
+        )
+      );
+  };
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -26,12 +41,29 @@ export default function Register({ navigation }) {
         </Text>
         <View style={styles.inputs}>
           <View style={styles.input}>
-            <Text style={styles.inputText}>Nombre de usuario</Text>
-            <TextInput style={styles.inputField} defaultValue={username} onChangeText={username => setUsername(username)} />
+            <Text style={styles.inputText}>Nombre</Text>
+            <TextInput
+              style={styles.inputField}
+              defaultValue={name}
+              onChangeText={(na) => setName(na)}
+            />
+          </View>
+          <View style={styles.input}>
+            <Text style={styles.inputText}>Correo electrónico</Text>
+            <TextInput
+              style={styles.inputField}
+              defaultValue={email}
+              onChangeText={(em) => setEmail(em)}
+            />
           </View>
           <View style={styles.input}>
             <Text style={styles.inputText}>Contraseña</Text>
-            <TextInput style={styles.inputField} secureTextEntry={true} defaultValue={password} onChangeText={pass => setPassword(pass)} />
+            <TextInput
+              style={styles.inputField}
+              secureTextEntry={true}
+              defaultValue={password}
+              onChangeText={(pass) => setPassword(pass)}
+            />
           </View>
         </View>
 
@@ -41,13 +73,16 @@ export default function Register({ navigation }) {
               title="Registrarse"
               color="white"
               onPress={() => {
-                signUp();
-                navigation.navigate('Main');
+                register();
               }}
             />
           </View>
           <View style={styles.button2}>
-            <Button title="Iniciar sesión" color="#3498db" onPress={() => navigation.navigate('Login')} />
+            <Button
+              title="Iniciar sesión"
+              color="#3498db"
+              onPress={() => navigation.replace("Login")}
+            />
           </View>
         </View>
       </View>

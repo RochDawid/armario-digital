@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   TouchableWithoutFeedback,
   Keyboard,
@@ -9,12 +9,29 @@ import {
   Button,
 } from "react-native";
 import Drop from "./Drop";
-import { AuthContext } from '../context/authContext';
+import { auth } from '../others/firebase';
 
 export default function Login({ navigation }) {
-  const { signIn } = useContext(AuthContext);
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((authUser) => {
+      if (authUser) {
+        navigation.replace('Home');
+      }
+    });
+
+    return unsubscribe;
+  }, []);
+
+  const login = () => {
+    auth.signInWithEmailAndPassword(email, password)
+    .then(() => {
+      navigation.replace('Home');
+    })
+    .catch(() => alert('El correo o la contraseña introducidos no son correctos o no tienen el formato adecuado.'));
+  }
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -26,8 +43,8 @@ export default function Login({ navigation }) {
         </Text>
         <View style={styles.inputs}>
           <View style={styles.input}>
-            <Text style={styles.inputText}>Nombre de usuario</Text>
-            <TextInput style={styles.inputField} defaultValue={username} onChangeText={username => setUsername(username)} />
+            <Text style={styles.inputText}>Correo electrónico</Text>
+            <TextInput style={styles.inputField} defaultValue={email} onChangeText={email => setEmail(email)} />
           </View>
           <View style={styles.input}>
             <Text style={styles.inputText}>Contraseña</Text>
@@ -40,14 +57,11 @@ export default function Login({ navigation }) {
             <Button
               title="Iniciar sesión"
               color="white"
-              onPress={() => {
-                signIn();
-                navigation.navigate('Main');
-              }}
+              onPress={() => login()}
             />
           </View>
           <View style={styles.button2}>
-            <Button title="Registrarse" color="#3498db" onPress={() => navigation.navigate('Register')} />
+            <Button title="Registrarse" color="#3498db" onPress={() => navigation.replace('Register')} />
           </View>
         </View>
       </View>
