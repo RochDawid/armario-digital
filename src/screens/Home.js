@@ -1,8 +1,7 @@
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, { useLayoutEffect, useState } from "react";
 import {
   Text,
   View,
-  Button,
   TouchableOpacity,
   Platform,
   ActivityIndicator,
@@ -11,6 +10,7 @@ import { auth, storage } from "../others/firebase";
 import { Avatar } from "react-native-elements";
 import * as ImagePicker from "expo-image-picker";
 import { Icon } from "react-native-elements/dist/icons/Icon";
+import { uploadImageAsync } from "../others/photoHandler";
 
 export default function Home({ navigation }) {
   const logout = () => {
@@ -19,66 +19,49 @@ export default function Home({ navigation }) {
       .then(() => {
         navigation.replace("Login");
       })
-      .catch((err) => console.log(err));
+      .catch(() =>
+        alert(
+          "Algo ha fallado intentando cerrar tu sesión, parece que no queremos que te vayas..."
+        )
+      );
   };
 
-  _pickImage = async () => {
+  const pickImage = async () => {
     let pickerResult = await ImagePicker.launchImageLibraryAsync({
       allowsEditing: true,
       mediaTypes: "Images",
     });
 
-    _handleImagePicked(pickerResult);
+    handleImagePicked(pickerResult);
   };
 
   const getLatestImage = () => {
     storage
       .ref()
-      .child(`photos/${auth.currentUser.displayName}_photo`)
+      .child(`photos/${auth?.currentUser?.displayName}_photo`)
       .getDownloadURL()
       .then((url) => {
         setImage(url);
       })
-      .catch((error) => alert(error));
+      .catch((err) => console.log(err));
   };
 
-  _handleImagePicked = async (pickerResult) => {
+  const handleImagePicked = async (pickerResult) => {
     try {
       setUploading(true);
       if (!pickerResult.cancelled) {
-        const uploadUrl = await uploadImageAsync(pickerResult.uri);
+        const uploadUrl = await uploadImageAsync(
+          pickerResult.uri,
+          auth.currentUser.displayName
+        );
         setImage(uploadUrl);
       }
     } catch (e) {
       alert("La subida de tu imagen ha fallado disculpa :(");
-      console.log(e);
     } finally {
       setUploading(false);
     }
   };
-
-  async function uploadImageAsync(uri) {
-    const blob = await new Promise((resolve, reject) => {
-      const xhr = new XMLHttpRequest();
-      xhr.onload = function () {
-        resolve(xhr.response);
-      };
-      xhr.onerror = function (e) {
-        console.log(e);
-        reject(new TypeError("Network request failed"));
-      };
-      xhr.responseType = "blob";
-      xhr.open("GET", uri, true);
-      xhr.send(null);
-    });
-
-    const photosRef = storage.ref().child("photos");
-    const ref = photosRef.child(`${auth.currentUser.displayName}_photo`);
-    const snapshot = await ref.put(blob);
-    blob.close();
-
-    return await snapshot.ref.getDownloadURL();
-  }
 
   const changeAvatar = async () => {
     if (Platform.OS !== "web") {
@@ -91,13 +74,13 @@ export default function Home({ navigation }) {
         return;
       }
     }
-    _pickImage();
+    pickImage();
   };
 
   useLayoutEffect(() => {
     getLatestImage();
     navigation.setOptions({
-      headerTitle: `Armario de ${auth.currentUser.displayName}`,
+      headerTitle: `Armario de ${auth?.currentUser?.displayName}`,
       headerStyle: {
         backgroundColor: "#3498db",
       },
@@ -141,12 +124,8 @@ export default function Home({ navigation }) {
         backgroundColor: "gray",
       }}
     >
-      <ActivityIndicator
-        color="white"
-        animating
-        size="large"
-      />
-      <Text style={{ color: 'white' }}>Subiendo tu imagen a la nube...</Text>
+      <ActivityIndicator color="white" animating size="large" />
+      <Text style={{ color: "white" }}>Subiendo tu imagen a la nube...</Text>
     </View>
   ) : (
     <View
