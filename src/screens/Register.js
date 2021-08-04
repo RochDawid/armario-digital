@@ -8,7 +8,7 @@ import {
   View,
   Button,
 } from "react-native";
-import Drop from "./Drop";
+import Drop from "../components/Drop";
 import { auth } from "../others/firebase";
 
 export default function Register({ navigation }) {
@@ -34,7 +34,7 @@ export default function Register({ navigation }) {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View>
-        <Drop />
+        <Drop bottom={false} />
         <Text style={styles.header}>Bienvenido a Armario Digital</Text>
         <Text style={styles.p}>
           Por favor, regístrate para disfrutar de la aplicación

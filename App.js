@@ -6,6 +6,8 @@ import { createStackNavigator } from "@react-navigation/stack";
 import Login from "./src/screens/Login";
 import Register from "./src/screens/Register";
 import Home from "./src/screens/Home";
+import AddGarment from "./src/screens/AddGarment";
+import EditGarment from "./src/screens/EditGarment";
 
 export default function App() {
   const Stack = createStackNavigator();
@@ -26,6 +28,26 @@ export default function App() {
             options={{ headerShown: false }}
           />
           <Stack.Screen name="Home" component={Home} />
+          <Stack.Screen
+            name="AddGarment"
+            component={AddGarment}
+            options={{
+              headerTitle: "Añadir prenda",
+              headerTintColor: "white",
+              headerStyle: { backgroundColor: "#3498db" },
+              headerBackTitle: "Armario",
+            }}
+          />
+          <Stack.Screen
+            name="EditGarment"
+            component={EditGarment}
+            options={{
+              headerTitle: "Editar prenda",
+              headerTintColor: "white",
+              headerStyle: { backgroundColor: "#3498db" },
+              headerBackTitle: "Armario",
+            }}
+          />
         </Stack.Navigator>
       </View>
     </NavigationContainer>

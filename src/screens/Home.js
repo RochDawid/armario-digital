@@ -5,12 +5,15 @@ import {
   TouchableOpacity,
   Platform,
   ActivityIndicator,
+  ScrollView,
 } from "react-native";
 import { auth, storage } from "../others/firebase";
 import { Avatar } from "react-native-elements";
 import * as ImagePicker from "expo-image-picker";
 import { Icon } from "react-native-elements/dist/icons/Icon";
 import { uploadImageAsync } from "../others/photoHandler";
+import Tab from "../components/Tab";
+import Garment from "../components/Garment";
 
 export default function Home({ navigation }) {
   const logout = () => {
@@ -134,9 +137,28 @@ export default function Home({ navigation }) {
         flex: "1",
         alignItems: "center",
         justifyContent: "center",
+        backgroundColor: "#fff",
       }}
     >
-      <Text>Tu ropa</Text>
+      <ScrollView style={{ width: "100%" }}>
+        <Garment
+          navigation={navigation}
+          garmentInfo={{ brand: "Nike", category: "Camiseta de manga corta", color: "Blanco", photo: "https://chemasport.es/22953-thickbox_default/camiseta-nike-sportswear-h-blanco.jpg" }}
+        />
+        <Garment
+          navigation={navigation}
+          garmentInfo={{ brand: "Primark", category: "Vaqueros", color: "Azul", photo: "http://primarkblog.com/wp-content/uploads/2015/01/Vaqueros-azules-b%C3%A1sicos-de-ni%C3%B1o.jpg" }}
+        />
+        <Garment
+          navigation={navigation}
+          garmentInfo={{ brand: "Air Jordan", category: "Zapatillas", color: "Azul", photo: "https://selectiveshops.com/wp-content/uploads/2020/05/Captura-de-pantalla-2020-05-17-a-las-18.34.01.png" }}
+        />
+        <Garment
+          navigation={navigation}
+          garmentInfo={{ last: true, brand: "Thrasher", category: "Sudadera con capucha", color: "Negro", photo: "https://cdn.skatespain.com/media/catalog/product/cache/1/thumbnail/9df78eab33525d08d6e5fb8d27136e95/s/t/sthr015-sudadera-thrasher-bbq-black_1.jpg" }}
+        />
+      </ScrollView>
+      <Tab navigation={navigation} />
     </View>
   );
 }
