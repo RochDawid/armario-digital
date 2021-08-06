@@ -143,7 +143,7 @@ export default function Home({ navigation }) {
       <ScrollView style={{ width: "100%" }}>
         <Garment
           navigation={navigation}
-          garmentInfo={{ brand: "Nike", category: "Camiseta de manga corta", color: "Blanco", photo: "https://chemasport.es/22953-thickbox_default/camiseta-nike-sportswear-h-blanco.jpg" }}
+          garmentInfo={{ brand: "Nike", category: "Camiseta de manga corta", color: "Blanca", photo: "https://chemasport.es/22953-thickbox_default/camiseta-nike-sportswear-h-blanco.jpg" }}
         />
         <Garment
           navigation={navigation}
