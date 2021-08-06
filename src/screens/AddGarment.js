@@ -56,7 +56,7 @@ export default function AddGarment() {
           auth.currentUser.displayName
         );
         db.collection("clothes")
-          .add({ category, brand, color, photoUrl: url, user: auth.currentUser.displayName });
+          .add({ category, brand, color, photoUrl: url, user: auth.currentUser.email });
       }
     } catch (e) {
       console.log(e);
