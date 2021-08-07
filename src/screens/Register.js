@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   TouchableWithoutFeedback,
   Keyboard,
@@ -10,17 +10,20 @@ import {
 } from "react-native";
 import Drop from "../components/Drop";
 import { auth } from "../others/firebase";
+import { useForm, Controller } from "react-hook-form";
 
 export default function Register({ navigation }) {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({ mode: "onSubmit" });
 
-  const register = () => {
+  const register = (data) => {
     auth
-      .createUserWithEmailAndPassword(email, password)
+      .createUserWithEmailAndPassword(data.email, data.password)
       .then((authUser) => {
-        authUser.user.updateProfile({ displayName: name }).then(() => {
+        authUser.user.updateProfile({ displayName: data.name }).then(() => {
           navigation.replace("Home");
         });
       })
@@ -41,40 +44,85 @@ export default function Register({ navigation }) {
         </Text>
         <View style={styles.inputs}>
           <View style={styles.input}>
-            <Text style={styles.inputText}>Nombre</Text>
-            <TextInput
-              style={styles.inputField}
-              defaultValue={name}
-              onChangeText={(na) => setName(na)}
+            <Text style={styles.inputText}>Nombre*</Text>
+            <Controller
+              control={control}
+              rules={{
+                required: true,
+              }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput
+                  style={styles.inputField}
+                  value={value}
+                  onChangeText={(na) => onChange(na)}
+                  onBlur={onBlur}
+                />
+              )}
+              name="name"
+              defaultValue=""
             />
+            {errors.name && (
+              <Text style={{ color: "red", padding: 5 }}>
+                Introduce tu nombre
+              </Text>
+            )}
           </View>
           <View style={styles.input}>
-            <Text style={styles.inputText}>Correo electrónico</Text>
-            <TextInput
-              style={styles.inputField}
-              defaultValue={email}
-              onChangeText={(em) => setEmail(em)}
+            <Text style={styles.inputText}>Correo electrónico*</Text>
+            <Controller
+              control={control}
+              rules={{
+                required: true,
+              }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput
+                  style={styles.inputField}
+                  onChangeText={(email) => onChange(email)}
+                  onBlur={onBlur}
+                  value={value}
+                />
+              )}
+              name="email"
+              defaultValue=""
             />
+            {errors.email && (
+              <Text style={{ color: "red", padding: 5 }}>
+                Introduce el correo electrónico
+              </Text>
+            )}
           </View>
           <View style={styles.input}>
-            <Text style={styles.inputText}>Contraseña</Text>
-            <TextInput
-              style={styles.inputField}
-              secureTextEntry={true}
-              defaultValue={password}
-              onChangeText={(pass) => setPassword(pass)}
+            <Text style={styles.inputText}>Contraseña*</Text>
+            <Controller
+              control={control}
+              rules={{
+                required: true,
+              }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput
+                  style={styles.inputField}
+                  secureTextEntry={true}
+                  onBlur={onBlur}
+                  value={value}
+                  onChangeText={(pass) => onChange(pass)}
+                />
+              )}
+              name="password"
+              defaultValue=""
             />
+            {errors.password && (
+              <Text style={{ color: "red", padding: 5 }}>
+                Introduce la contraseña
+              </Text>
+            )}
           </View>
         </View>
-
         <View style={styles.buttons}>
           <View style={styles.button}>
             <Button
               title="Registrarse"
               color="#E9EDE9"
-              onPress={() => {
-                register();
-              }}
+              onPress={handleSubmit(register)}
             />
           </View>
           <View style={styles.button2}>
@@ -139,7 +187,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#1BB2EC",
     borderRadius: 25,
     padding: 5,
-    marginTop: 50,
+    marginTop: 25,
     width: 180,
   },
   button2: {
