@@ -9,29 +9,38 @@ import {
   Button,
 } from "react-native";
 import Drop from "../components/Drop";
-import { auth } from '../others/firebase';
+import { auth } from "../others/firebase";
+import { useForm, Controller } from "react-hook-form";
 
 export default function Login({ navigation }) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({ mode: 'onSubmit' });
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((authUser) => {
       if (authUser) {
-        navigation.replace('Home');
+        navigation.replace("Home");
       }
     });
 
     return unsubscribe;
   }, []);
 
-  const login = () => {
-    auth.signInWithEmailAndPassword(email, password)
-    .then(() => {
-      navigation.replace('Home');
-    })
-    .catch(() => alert('El correo o la contraseña introducidos no son correctos o no tienen el formato adecuado.'));
-  }
+  const login = (data) => {
+    auth
+      .signInWithEmailAndPassword(data.email, data.password)
+      .then(() => {
+        navigation.replace("Home");
+      })
+      .catch(() =>
+        alert(
+          "El correo o la contraseña introducidos no son correctos o no tienen el formato adecuado."
+        )
+      );
+  };
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -43,25 +52,65 @@ export default function Login({ navigation }) {
         </Text>
         <View style={styles.inputs}>
           <View style={styles.input}>
-            <Text style={styles.inputText}>Correo electrónico</Text>
-            <TextInput style={styles.inputField} defaultValue={email} onChangeText={email => setEmail(email)} />
+            <Text style={styles.inputText}>Correo electrónico*</Text>
+            <Controller
+              control={control}
+              rules={{
+                required: true,
+              }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput
+                  style={styles.inputField}
+                  onChangeText={(email) => onChange(email)}
+                  onBlur={onBlur}
+                  value={value}
+                />
+              )}
+              name="email"
+              defaultValue=""
+            />
+            {errors.email && (
+              <Text style={{ color: "red", padding: 5 }}>Introduce el correo electrónico</Text>
+            )}
           </View>
           <View style={styles.input}>
-            <Text style={styles.inputText}>Contraseña</Text>
-            <TextInput style={styles.inputField} secureTextEntry={true} defaultValue={password} onChangeText={pass => setPassword(pass)} />
+            <Text style={styles.inputText}>Contraseña*</Text>
+            <Controller
+              control={control}
+              rules={{
+                required: true,
+              }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput
+                  style={styles.inputField}
+                  secureTextEntry={true}
+                  onBlur={onBlur}
+                  value={value}
+                  onChangeText={(pass) => onChange(pass)}
+                />
+              )}
+              name="password"
+              defaultValue=""
+            />
+            {errors.password && (
+              <Text style={{ color: "red", padding: 5 }}>Introduce la contraseña</Text>
+            )}
           </View>
         </View>
-
         <View style={styles.buttons}>
           <View style={styles.button}>
             <Button
               title="Iniciar sesión"
               color="#E9EDE9"
-              onPress={() => login()}
+              onPress={handleSubmit(login)}
             />
           </View>
           <View style={styles.button2}>
-            <Button title="Registrarse" color="#1BB2EC" onPress={() => navigation.replace('Register')} />
+            <Button
+              title="Registrarse"
+              color="#1BB2EC"
+              onPress={() => navigation.replace("Register")}
+            />
           </View>
         </View>
       </View>
@@ -103,7 +152,7 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     paddingBottom: 5,
     fontWeight: "500",
-    color: "#E9EDE9"
+    color: "#E9EDE9",
   },
   inputField: {
     width: 300,
