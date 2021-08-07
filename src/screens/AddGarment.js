@@ -55,8 +55,8 @@ export default function AddGarment({ navigation }) {
   const pickImage = async (gallery) => {
     let pickerResulted;
     const pickerOptions = {
-      allowsEditing: true,
       mediaTypes: "Images",
+      quality: 0,
     };
 
     if (!gallery) {

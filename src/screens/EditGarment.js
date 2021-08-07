@@ -61,8 +61,8 @@ export default function EditGarment({ route, navigation }) {
   const pickImage = async (gallery) => {
     let pickerResulted;
     const pickerOptions = {
-      allowsEditing: true,
       mediaTypes: "Images",
+      quality: 0,
     };
 
     if (!gallery) {
@@ -119,15 +119,7 @@ export default function EditGarment({ route, navigation }) {
 
   const deleteGarment = async () => {
     try {
-      let url = imageOld;
-      if (pickerResult) {
-        url = await uploadGarmentPhotoAsync(
-          pickerResult.uri,
-          auth.currentUser.displayName
-        );
-        // delete old image from firebase storage
-        storage.refFromURL(imageOld).delete();
-      }
+      storage.refFromURL(imageOld).delete();
       await db
         .collection("clothes")
         .where("user", "==", auth.currentUser.email)
