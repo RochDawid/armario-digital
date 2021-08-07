@@ -14,7 +14,7 @@ import * as ImagePicker from "expo-image-picker";
 import { uploadGarmentPhotoAsync } from "../others/photoHandler";
 import { Avatar } from "react-native-elements";
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
-import { auth, db } from "../others/firebase";
+import { auth, db, storage } from "../others/firebase";
 
 export default function EditGarment({ route, navigation }) {
   const [showModal, setShowModal] = useState(false);
@@ -81,6 +81,8 @@ export default function EditGarment({ route, navigation }) {
           pickerResult.uri,
           auth.currentUser.displayName
         );
+        // delete old image
+        storage.refFromURL(imageOld).delete();
       }
       await db
         .collection("clothes")
