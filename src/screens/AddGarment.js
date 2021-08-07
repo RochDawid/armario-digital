@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   Keyboard,
   Modal,
+  Switch,
 } from "react-native";
 import { Icon } from "react-native-elements/dist/icons/Icon";
 import * as ImagePicker from "expo-image-picker";
@@ -17,13 +18,14 @@ import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 import { auth, db } from "../others/firebase";
 
 export default function AddGarment({ navigation }) {
+  const [pickerResult, setPickerResult] = useState();
   const [image, setImage] = useState("");
   const [category, setCategory] = useState("");
   const [brand, setBrand] = useState("");
   const [color, setColor] = useState("");
   const [uploading, setUploading] = useState(false);
-  const [pickerResult, setPickerResult] = useState();
   const [showModal, setShowModal] = useState(false);
+  const [washing, setWashing] = useState(false);
 
   const chooseImage = async (gallery) => {
     if (Platform.OS !== "web") {
@@ -55,7 +57,7 @@ export default function AddGarment({ navigation }) {
     const pickerOptions = {
       allowsEditing: true,
       mediaTypes: "Images",
-    }
+    };
 
     if (!gallery) {
       pickerResulted = await ImagePicker.launchCameraAsync(pickerOptions);
@@ -80,6 +82,7 @@ export default function AddGarment({ navigation }) {
           brand,
           color,
           photoUrl: url,
+          washing,
           user: auth.currentUser.email,
         });
       }
@@ -101,12 +104,12 @@ export default function AddGarment({ navigation }) {
         flex: "1",
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: "lightgray",
+        backgroundColor: "#202832",
       }}
     >
-      <ActivityIndicator color="white" animating size="large" />
-      <Text style={{ color: "white" }}>
-        Poniendo tu prenda en el armario...
+      <ActivityIndicator color="#1BB2EC" animating size="large" />
+      <Text style={{ color: "#E9EDE9" }}>
+        Añadiendo tu prenda al armario...
       </Text>
     </View>
   ) : (
@@ -123,8 +126,8 @@ export default function AddGarment({ navigation }) {
               "https://images.assetsdelivery.com/compings_v2/apoev/apoev1804/apoev180400145.jpg",
           }}
           style={{
-            height: 100,
-            width: 100,
+            height: 150,
+            width: 150,
             borderWidth: 1,
             borderRadius: 18,
             borderColor: "#1BB2EC",
@@ -223,18 +226,61 @@ export default function AddGarment({ navigation }) {
             onChangeText={(col) => setColor(col)}
           />
         </View>
+        <View
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "center",
+            alignItems: "center",
+            paddingTop: 25,
+          }}
+        >
+          <Text style={{ color: "#E9EDE9", paddingRight: 10 }}>
+            ¿En la lavadora?
+          </Text>
+          <Switch
+            onValueChange={(value) => setWashing(value)}
+            value={washing}
+            thumbColor="#1BB2EC"
+            trackColor={{ true: "#E9EDE9" }}
+          />
+        </View>
       </TouchableWithoutFeedback>
       <View>
         <TouchableOpacity
           style={{
+            alignSelf: "center",
             backgroundColor: "#1BB2EC",
             borderRadius: 25,
             marginTop: 50,
-            alignSelf: "center",
           }}
           onPress={() => handleSubmit()}
         >
-          <Icon name="check" color="#E9EDE9" size={80} />
+          <View
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "center",
+              alignItems: "center",
+              padding: 5,
+            }}
+          >
+            <Icon
+              name="check"
+              color="#E9EDE9"
+              size={40}
+              style={{ marginLeft: 5 }}
+            />
+            <Text
+              style={{
+                color: "#E9EDE9",
+                marginHorizontal: 10,
+                fontWeight: "500",
+              }}
+            >
+              Añadir prenda
+            </Text>
+          </View>
         </TouchableOpacity>
       </View>
     </View>

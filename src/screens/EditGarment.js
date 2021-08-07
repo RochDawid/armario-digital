@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   Keyboard,
   Modal,
+  Switch,
 } from "react-native";
 import { Icon } from "react-native-elements/dist/icons/Icon";
 import * as ImagePicker from "expo-image-picker";
@@ -17,18 +18,20 @@ import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 import { auth, db, storage } from "../others/firebase";
 
 export default function EditGarment({ route, navigation }) {
+  const [pickerResult, setPickerResult] = useState();
   const [showModal, setShowModal] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [washing, setWashing] = useState(route.params.washing);
   const [image, setImage] = useState(route.params.photo);
   const [category, setCategory] = useState(route.params.category);
   const [brand, setBrand] = useState(route.params.brand);
   const [color, setColor] = useState(route.params.color);
-  const [pickerResult, setPickerResult] = useState();
 
   const categoryOld = route.params.category;
   const imageOld = route.params.photo;
   const brandOld = route.params.brand;
   const colorOld = route.params.color;
+  const washingOld = route.params.washing;
 
   const chooseImage = async (gallery) => {
     if (Platform.OS !== "web") {
@@ -81,7 +84,7 @@ export default function EditGarment({ route, navigation }) {
           pickerResult.uri,
           auth.currentUser.displayName
         );
-        // delete old image
+        // delete old image from firebase storage
         storage.refFromURL(imageOld).delete();
       }
       await db
@@ -94,11 +97,12 @@ export default function EditGarment({ route, navigation }) {
               doc.data().category == categoryOld &&
               doc.data().brand == brandOld &&
               doc.data().color == colorOld &&
-              doc.data().photoUrl == imageOld
+              doc.data().photoUrl == imageOld &&
+              doc.data().washing == washingOld
             ) {
               db.collection("clothes")
                 .doc(doc.id)
-                .update({ category, brand, color, photoUrl: url });
+                .update({ category, brand, color, photoUrl: url, washing });
             }
           });
         });
@@ -113,6 +117,43 @@ export default function EditGarment({ route, navigation }) {
     }
   };
 
+  const deleteGarment = async () => {
+    try {
+      let url = imageOld;
+      if (pickerResult) {
+        url = await uploadGarmentPhotoAsync(
+          pickerResult.uri,
+          auth.currentUser.displayName
+        );
+        // delete old image from firebase storage
+        storage.refFromURL(imageOld).delete();
+      }
+      await db
+        .collection("clothes")
+        .where("user", "==", auth.currentUser.email)
+        .get()
+        .then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            if (
+              doc.data().category == categoryOld &&
+              doc.data().brand == brandOld &&
+              doc.data().color == colorOld &&
+              doc.data().photoUrl == imageOld
+            ) {
+              db.collection("clothes").doc(doc.id).delete();
+            }
+          });
+        });
+    } catch (e) {
+      console.log(e);
+      alert(
+        "Eliminar tu prenda de ropa ha fallado 😞, por favor vuelve a intentarlo."
+      );
+    } finally {
+      navigation.replace("Home");
+    }
+  };
+
   return uploading ? (
     <View
       style={{
@@ -120,11 +161,13 @@ export default function EditGarment({ route, navigation }) {
         flex: "1",
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: "lightgray",
+        backgroundColor: "#202832",
       }}
     >
-      <ActivityIndicator color="white" animating size="large" />
-      <Text style={{ color: "white" }}>Cambiando tu prenda del armario...</Text>
+      <ActivityIndicator color="#1BB2EC" animating size="large" />
+      <Text style={{ color: "#E9EDE9" }}>
+        Cambiando tu prenda del armario...
+      </Text>
     </View>
   ) : (
     <View style={{ backgroundColor: "#202832", display: "flex", flex: 1 }}>
@@ -140,8 +183,8 @@ export default function EditGarment({ route, navigation }) {
               "https://images.assetsdelivery.com/compings_v2/apoev/apoev1804/apoev180400145.jpg",
           }}
           style={{
-            height: 100,
-            width: 100,
+            height: 150,
+            width: 150,
             borderWidth: 1,
             borderRadius: 18,
             borderColor: "#1BB2EC",
@@ -240,18 +283,98 @@ export default function EditGarment({ route, navigation }) {
             onChangeText={(col) => setColor(col)}
           />
         </View>
+        <View
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "center",
+            alignItems: "center",
+            paddingTop: 25,
+          }}
+        >
+          <Text style={{ color: "#E9EDE9", paddingRight: 10 }}>
+            ¿En la lavadora?
+          </Text>
+          <Switch
+            onValueChange={(value) => setWashing(value)}
+            value={washing}
+            thumbColor="#1BB2EC"
+            trackColor={{ true: "#E9EDE9" }}
+          />
+        </View>
       </TouchableWithoutFeedback>
       <View>
         <TouchableOpacity
           style={{
+            alignSelf: "center",
             backgroundColor: "#1BB2EC",
             borderRadius: 25,
             marginTop: 50,
-            alignSelf: "center",
           }}
           onPress={() => handleSubmit()}
         >
-          <Icon name="check" color="#E9EDE9" size={80} />
+          <View
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "center",
+              alignItems: "center",
+              padding: 5,
+            }}
+          >
+            <Icon
+              name="check"
+              color="#E9EDE9"
+              size={40}
+              style={{ marginLeft: 5 }}
+            />
+            <Text
+              style={{
+                color: "#E9EDE9",
+                marginHorizontal: 10,
+                fontWeight: "500",
+              }}
+            >
+              Actualizar prenda
+            </Text>
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={{
+            alignSelf: "center",
+            backgroundColor: "#202832",
+            borderRadius: 25,
+            marginTop: 15,
+            borderColor: "#ff0000",
+            borderWidth: 1,
+          }}
+          onPress={() => deleteGarment()}
+        >
+          <View
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "center",
+              alignItems: "center",
+              padding: 5,
+            }}
+          >
+            <Icon
+              name="delete"
+              color="#ff0000"
+              size={40}
+              style={{ marginLeft: 5 }}
+            />
+            <Text
+              style={{
+                color: "#ff0000",
+                marginHorizontal: 10,
+                fontWeight: "500",
+              }}
+            >
+              Eliminar prenda
+            </Text>
+          </View>
         </TouchableOpacity>
       </View>
     </View>

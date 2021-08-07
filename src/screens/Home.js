@@ -91,7 +91,7 @@ export default function Home({ navigation }) {
     updateClothes();
 
     return setLoading(false);
-  }, [])
+  }, [clothes]);
 
   useLayoutEffect(() => {
     getLatestImage();
@@ -132,7 +132,7 @@ export default function Home({ navigation }) {
       setClothes(res);
       setLoading(false);
     });
-  }
+  };
 
   return uploading ? (
     <View
@@ -169,14 +169,16 @@ export default function Home({ navigation }) {
         backgroundColor: "#202832",
       }}
     >
-      <ScrollView style={{ width: "100%" }} refreshControl={
+      <ScrollView
+        style={{ width: "100%" }}
+        refreshControl={
           <RefreshControl
             refreshing={loading}
             onRefresh={updateClothes}
-            tintColor="#E9EDE9"
+            tintColor="#1BB2EC"
           />
-      }
-        >
+        }
+      >
         {clothes.map((garment, index) => (
           <Garment
             key={garment.photoUrl}
@@ -187,6 +189,7 @@ export default function Home({ navigation }) {
               color: garment.color,
               category: garment.category,
               photo: garment.photoUrl,
+              washing: garment.washing,
             }}
           />
         ))}
