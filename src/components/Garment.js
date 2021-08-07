@@ -11,33 +11,33 @@ export default function Garment({ garmentInfo, navigation }) {
                 display: "flex",
                 flexDirection: "row",
                 flex: 1,
-                padding: 10,
                 marginVertical: 10,
                 marginHorizontal: 20,
                 justifyContent: "center",
                 alignItems: "center",
-                borderWidth: 2,
-                borderColor: "#3498db",
-                borderRadius: 25,
+                borderWidth: 1,
+                borderColor: "#E9EDE9",
+                borderRadius: 10,
                 marginBottom: 140,
+                backgroundColor: "#2C3A58",
               }
             : {
                 display: "flex",
                 flexDirection: "row",
                 flex: 1,
-                padding: 10,
                 marginVertical: 10,
                 marginHorizontal: 20,
                 justifyContent: "center",
                 alignItems: "center",
-                borderWidth: 2,
-                borderColor: "#3498db",
-                borderRadius: 25,
+                borderWidth: 1,
+                borderColor: "#E9EDE9",
+                borderRadius: 10,
+                backgroundColor: "#2C3A58",
               }
         }
       >
         <View style={{ flex: 0.4 }}>
-          <Image source={{ uri: garmentInfo.photo }} style={{ height: 150 }} />
+          <Image source={{ uri: garmentInfo.photo }} style={{ height: 150, borderTopLeftRadius: 9, borderBottomLeftRadius: 9 }} />
         </View>
         <View
           style={{
@@ -50,7 +50,7 @@ export default function Garment({ garmentInfo, navigation }) {
         >
           <Text
             style={{
-              color: "#3498db",
+              color: "#E9EDE9",
               fontWeight: "800",
               textAlign: "center",
               marginVertical: 5,
@@ -58,10 +58,10 @@ export default function Garment({ garmentInfo, navigation }) {
           >
             {garmentInfo.category}
           </Text>
-          <Text style={{ color: "#3498db", marginVertical: 2 }}>
+          <Text style={{ color: "#E9EDE9", marginVertical: 2 }}>
             Marca: {garmentInfo.brand}
           </Text>
-          <Text style={{ color: "#3498db" }}>Color: {garmentInfo.color}</Text>
+          <Text style={{ color: "#E9EDE9" }}>Color: {garmentInfo.color}</Text>
         </View>
       </View>
     </TouchableOpacity>

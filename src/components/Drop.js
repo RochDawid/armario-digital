@@ -7,7 +7,7 @@ export default function Drop({ bottom }) {
 
 const styles = StyleSheet.create({
   drop: {
-    backgroundColor: "#3498db",
+    backgroundColor: "#1BB2EC",
     position: "absolute",
     height: 2000,
     width: 2000,
@@ -16,7 +16,7 @@ const styles = StyleSheet.create({
     left: -1550,
   },
   drop2: {
-    backgroundColor: "#3498db",
+    backgroundColor: "#1BB2EC",
     position: "absolute",
     height: 600,
     width: 550,

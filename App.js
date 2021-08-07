@@ -33,8 +33,8 @@ export default function App() {
             component={AddGarment}
             options={{
               headerTitle: "Añadir prenda",
-              headerTintColor: "white",
-              headerStyle: { backgroundColor: "#3498db" },
+              headerTintColor: "#E9EDE9",
+              headerStyle: { backgroundColor: "#2C3A58" },
               headerBackTitle: "Armario",
             }}
           />
@@ -43,8 +43,8 @@ export default function App() {
             component={EditGarment}
             options={{
               headerTitle: "Editar prenda",
-              headerTintColor: "white",
-              headerStyle: { backgroundColor: "#3498db" },
+              headerTintColor: "#E9EDE9",
+              headerStyle: { backgroundColor: "#2C3A58" },
               headerBackTitle: "Armario",
             }}
           />
@@ -57,6 +57,5 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
   },
 });

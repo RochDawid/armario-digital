@@ -33,7 +33,7 @@ export default function Register({ navigation }) {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View>
+      <View style={{ flex: 1, backgroundColor: "#202832" }}>
         <Drop bottom={false} />
         <Text style={styles.header}>Bienvenido a Armario Digital</Text>
         <Text style={styles.p}>
@@ -71,7 +71,7 @@ export default function Register({ navigation }) {
           <View style={styles.button}>
             <Button
               title="Registrarse"
-              color="white"
+              color="#E9EDE9"
               onPress={() => {
                 register();
               }}
@@ -80,7 +80,7 @@ export default function Register({ navigation }) {
           <View style={styles.button2}>
             <Button
               title="Iniciar sesión"
-              color="#3498db"
+              color="#1BB2EC"
               onPress={() => navigation.replace("Login")}
             />
           </View>
@@ -93,7 +93,7 @@ export default function Register({ navigation }) {
 const styles = StyleSheet.create({
   header: {
     marginTop: 75,
-    color: "white",
+    color: "#E9EDE9",
     fontWeight: "800",
     fontSize: 35,
     width: "85%",
@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
   },
   p: {
     marginTop: 70,
-    color: "white",
+    color: "#E9EDE9",
     paddingHorizontal: 25,
     width: "60%",
   },
@@ -124,17 +124,19 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     paddingBottom: 5,
     fontWeight: "500",
+    color: "#E9EDE9",
   },
   inputField: {
     width: 300,
     height: 40,
     borderWidth: 1,
     borderRadius: 25,
-    borderColor: "#3498db",
+    borderColor: "#1BB2EC",
     padding: 10,
+    color: "#E9EDE9",
   },
   button: {
-    backgroundColor: "#3498db",
+    backgroundColor: "#1BB2EC",
     borderRadius: 25,
     padding: 5,
     marginTop: 50,
@@ -142,7 +144,7 @@ const styles = StyleSheet.create({
   },
   button2: {
     borderWidth: 1,
-    borderColor: "#3498db",
+    borderColor: "#1BB2EC",
     borderRadius: 25,
     padding: 5,
     marginTop: 10,

@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import {
   Text,
   View,
@@ -6,6 +6,7 @@ import {
   Platform,
   ActivityIndicator,
   ScrollView,
+  RefreshControl,
 } from "react-native";
 import { auth, storage } from "../others/firebase";
 import { Avatar } from "react-native-elements";
@@ -14,8 +15,14 @@ import { Icon } from "react-native-elements/dist/icons/Icon";
 import { uploadImageAsync } from "../others/photoHandler";
 import Tab from "../components/Tab";
 import Garment from "../components/Garment";
+import { getClothes } from "../others/garmentService";
 
 export default function Home({ navigation }) {
+  const [clothes, setClothes] = useState([]);
+  const [image, setImage] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const [loading, setLoading] = useState(true);
+
   const logout = () => {
     auth
       .signOut()
@@ -80,21 +87,26 @@ export default function Home({ navigation }) {
     pickImage();
   };
 
+  useEffect(() => {
+    updateClothes();
+
+    return setLoading(false);
+  }, [])
+
   useLayoutEffect(() => {
     getLatestImage();
     navigation.setOptions({
       headerTitle: `Armario de ${auth?.currentUser?.displayName}`,
       headerStyle: {
-        backgroundColor: "#3498db",
+        backgroundColor: "#2C3A58",
       },
-      headerTintColor: "white",
       headerTitleStyle: {
         fontWeight: "bold",
-        color: "white",
+        color: "#E9EDE9",
       },
       headerRight: () => (
         <TouchableOpacity onPress={() => logout()}>
-          <Icon name="logout" color="white" style={{ marginRight: 20 }} />
+          <Icon name="logout" color="#E9EDE9" style={{ marginRight: 20 }} />
         </TouchableOpacity>
       ),
       headerLeft: () => (
@@ -114,8 +126,12 @@ export default function Home({ navigation }) {
     });
   });
 
-  const [image, setImage] = useState("");
-  const [uploading, setUploading] = useState(false);
+  const updateClothes = async () => {
+    await getClothes().then((res) => {
+      setClothes(res);
+      setLoading(false);
+    });
+  }
 
   return uploading ? (
     <View
@@ -124,11 +140,23 @@ export default function Home({ navigation }) {
         flex: "1",
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: "gray",
+        backgroundColor: "lightgray",
       }}
     >
       <ActivityIndicator color="white" animating size="large" />
       <Text style={{ color: "white" }}>Subiendo tu imagen a la nube...</Text>
+    </View>
+  ) : loading ? (
+    <View
+      style={{
+        display: "flex",
+        flex: "1",
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: "#202832",
+      }}
+    >
+      <ActivityIndicator size="large" animating color="#1BB2EC" />
     </View>
   ) : (
     <View
@@ -137,26 +165,30 @@ export default function Home({ navigation }) {
         flex: "1",
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: "#fff",
+        backgroundColor: "#202832",
       }}
     >
-      <ScrollView style={{ width: "100%" }}>
-        <Garment
-          navigation={navigation}
-          garmentInfo={{ brand: "Nike", category: "Camiseta de manga corta", color: "Blanca", photo: "https://chemasport.es/22953-thickbox_default/camiseta-nike-sportswear-h-blanco.jpg" }}
-        />
-        <Garment
-          navigation={navigation}
-          garmentInfo={{ brand: "Primark", category: "Vaqueros", color: "Azul", photo: "http://primarkblog.com/wp-content/uploads/2015/01/Vaqueros-azules-b%C3%A1sicos-de-ni%C3%B1o.jpg" }}
-        />
-        <Garment
-          navigation={navigation}
-          garmentInfo={{ brand: "Air Jordan", category: "Zapatillas", color: "Azul", photo: "https://selectiveshops.com/wp-content/uploads/2020/05/Captura-de-pantalla-2020-05-17-a-las-18.34.01.png" }}
-        />
-        <Garment
-          navigation={navigation}
-          garmentInfo={{ last: true, brand: "Thrasher", category: "Sudadera con capucha", color: "Negro", photo: "https://cdn.skatespain.com/media/catalog/product/cache/1/thumbnail/9df78eab33525d08d6e5fb8d27136e95/s/t/sthr015-sudadera-thrasher-bbq-black_1.jpg" }}
-        />
+      <ScrollView style={{ width: "100%" }} refreshControl={
+          <RefreshControl
+            refreshing={loading}
+            onRefresh={updateClothes}
+            tintColor="#E9EDE9"
+          />
+      }
+        >
+        {clothes.map((garment, index) => (
+          <Garment
+            key={garment.photoUrl}
+            navigation={navigation}
+            garmentInfo={{
+              last: index == clothes.length - 1,
+              brand: garment.brand,
+              color: garment.color,
+              category: garment.category,
+              photo: garment.photoUrl,
+            }}
+          />
+        ))}
       </ScrollView>
       <Tab navigation={navigation} />
     </View>

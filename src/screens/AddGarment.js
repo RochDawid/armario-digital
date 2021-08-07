@@ -15,7 +15,7 @@ import { Avatar } from "react-native-elements";
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 import { auth, db } from "../others/firebase";
 
-export default function AddGarment() {
+export default function AddGarment({ navigation }) {
   const [image, setImage] = useState("");
   const [category, setCategory] = useState("");
   const [brand, setBrand] = useState("");
@@ -28,9 +28,7 @@ export default function AddGarment() {
       const { status } =
         await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== "granted") {
-        alert(
-          "Necesitamos que nos otorgues permisos para poder modificar tu foto de perfil"
-        );
+        alert("Necesitamos que nos otorgues permisos para poder acceder a tu galería😞");
         return;
       }
     }
@@ -50,7 +48,7 @@ export default function AddGarment() {
   const handleSubmit = async () => {
     try {
       setUploading(true);
-      if (!pickerResult.cancelled) {
+      if (pickerResult && !pickerResult.cancelled) {
         const url = await uploadGarmentPhotoAsync(
           pickerResult.uri,
           auth.currentUser.displayName
@@ -65,6 +63,7 @@ export default function AddGarment() {
       );
     } finally {
       setUploading(false);
+      navigation.replace('Home');
     }
   };
 
@@ -79,10 +78,10 @@ export default function AddGarment() {
       }}
     >
       <ActivityIndicator color="white" animating size="large" />
-      <Text style={{ color: "white" }}>Subiendo tu imagen a la nube...</Text>
+      <Text style={{ color: "white" }}>Poniendo tu prenda en el armario...</Text>
     </View>
   ) : (
-    <View>
+    <View style={{ backgroundColor: "#202832", display: 'flex', flex: 1 }}>
       <TouchableOpacity
         style={{ marginBottom: 50, alignSelf: "center", marginTop: 50 }}
         onPress={() => chooseImage()}
@@ -99,16 +98,16 @@ export default function AddGarment() {
             width: 100,
             borderWidth: 1,
             borderRadius: 18,
-            borderColor: "#3498db",
+            borderColor: "#1BB2EC",
           }}
         />
-        <Text style={{ alignSelf: "center", paddingTop: 5 }}>
+        <Text style={{ alignSelf: "center", paddingTop: 5, color: "#E9EDE9" }}>
           Añadir imagen
         </Text>
       </TouchableOpacity>
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
         <View style={styles.inputContainer}>
-          <Text style={styles.placeholder}>Tipo de prenda</Text>
+          <Text style={styles.placeholder}>Nombre</Text>
           <TextInput
             style={styles.input}
             defaultValue={category}
@@ -135,14 +134,14 @@ export default function AddGarment() {
       <View>
         <TouchableOpacity
           style={{
-            backgroundColor: "#3498db",
+            backgroundColor: "#1BB2EC",
             borderRadius: 10,
             marginTop: 50,
             alignSelf: "center",
           }}
           onPress={() => handleSubmit()}
         >
-          <Icon name="check" color="#fff" size={100} />
+          <Icon name="check" color="#E9EDE9" size={100} />
         </TouchableOpacity>
       </View>
     </View>
@@ -157,12 +156,15 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: "#3498db",
+    borderColor: "#1BB2EC",
     borderRadius: 25,
     height: 40,
     padding: 10,
+    color: "#E9EDE9",
   },
   placeholder: {
     paddingBottom: 5,
+    paddingLeft: 5,
+    color: "#E9EDE9",
   },
 });
