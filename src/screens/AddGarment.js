@@ -7,6 +7,7 @@ import {
   StyleSheet,
   ActivityIndicator,
   Keyboard,
+  Modal,
 } from "react-native";
 import { Icon } from "react-native-elements/dist/icons/Icon";
 import * as ImagePicker from "expo-image-picker";
@@ -22,25 +23,47 @@ export default function AddGarment({ navigation }) {
   const [color, setColor] = useState("");
   const [uploading, setUploading] = useState(false);
   const [pickerResult, setPickerResult] = useState();
+  const [showModal, setShowModal] = useState(false);
 
-  const chooseImage = async () => {
+  const chooseImage = async (gallery) => {
     if (Platform.OS !== "web") {
-      const { status } =
-        await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (status !== "granted") {
-        alert("Necesitamos que nos otorgues permisos para poder acceder a tu galería😞");
-        return;
+      if (!gallery) {
+        const { status } = await ImagePicker.requestCameraPermissionsAsync();
+        if (status !== "granted") {
+          alert(
+            "Necesitamos que nos otorgues permisos para poder cambiar la foto😞"
+          );
+          return;
+        }
+      } else {
+        const { status } =
+          await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (status !== "granted") {
+          alert(
+            "Necesitamos que nos otorgues permisos para poder cambiar la foto😞"
+          );
+          return;
+        }
       }
     }
-    pickImage();
+    await pickImage(gallery);
+    setShowModal(false);
   };
 
-  const pickImage = async () => {
-    let pickerResulted = await ImagePicker.launchImageLibraryAsync({
-      allowsEditing: true,
-      mediaTypes: "Images",
-    });
+  const pickImage = async (gallery) => {
+    let pickerResulted;
 
+    if (!gallery) {
+      pickerResulted = await ImagePicker.launchCameraAsync({
+        allowsEditing: true,
+        mediaTypes: "Images",
+      });
+    } else {
+      pickerResulted = await ImagePicker.launchImageLibraryAsync({
+        allowsEditing: true,
+        mediaTypes: "Images",
+      });
+    }
     setImage(pickerResulted.uri);
     setPickerResult(pickerResulted);
   };
@@ -53,8 +76,13 @@ export default function AddGarment({ navigation }) {
           pickerResult.uri,
           auth.currentUser.displayName
         );
-        db.collection("clothes")
-          .add({ category, brand, color, photoUrl: url, user: auth.currentUser.email });
+        db.collection("clothes").add({
+          category,
+          brand,
+          color,
+          photoUrl: url,
+          user: auth.currentUser.email,
+        });
       }
     } catch (e) {
       console.log(e);
@@ -63,7 +91,7 @@ export default function AddGarment({ navigation }) {
       );
     } finally {
       setUploading(false);
-      navigation.replace('Home');
+      navigation.replace("Home");
     }
   };
 
@@ -78,13 +106,15 @@ export default function AddGarment({ navigation }) {
       }}
     >
       <ActivityIndicator color="white" animating size="large" />
-      <Text style={{ color: "white" }}>Poniendo tu prenda en el armario...</Text>
+      <Text style={{ color: "white" }}>
+        Poniendo tu prenda en el armario...
+      </Text>
     </View>
   ) : (
-    <View style={{ backgroundColor: "#202832", display: 'flex', flex: 1 }}>
+    <View style={{ backgroundColor: "#202832", display: "flex", flex: 1 }}>
       <TouchableOpacity
         style={{ marginBottom: 50, alignSelf: "center", marginTop: 50 }}
-        onPress={() => chooseImage()}
+        onPress={() => setShowModal(true)}
       >
         <Avatar
           rounded
@@ -106,6 +136,70 @@ export default function AddGarment({ navigation }) {
         </Text>
       </TouchableOpacity>
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+        <Modal visible={showModal} animated>
+          <View style={{ backgroundColor: "#606060", flex: 1 }}>
+            <View
+              style={{
+                display: "block",
+                backgroundColor: "#202832",
+                borderRadius: 15,
+                borderWidth: 3,
+                borderColor: "#1BB2EC",
+                width: 300,
+                height: 250,
+                alignSelf: "center",
+                top: 250,
+                opacity: 1,
+              }}
+            >
+              <TouchableOpacity
+                style={{ alignSelf: "flex-end", padding: 10 }}
+                onPress={() => setShowModal(false)}
+              >
+                <Icon name="close" color="#E9EDE9" size={35} />
+              </TouchableOpacity>
+              <View style={{ alignSelf: "center", flexDirection: "column" }}>
+                <Text
+                  style={{
+                    color: "#E9EDE9",
+                    textAlign: "center",
+                    fontWeight: "bold",
+                    marginBottom: 30,
+                    marginTop: 10,
+                  }}
+                >
+                  ¿De dónde quieres sacar la foto?
+                </Text>
+                <View
+                  style={{
+                    alignSelf: "center",
+                    flexDirection: "row",
+                    alignContent: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <TouchableOpacity
+                    style={{ marginHorizontal: 10 }}
+                    onPress={() => chooseImage(false)}
+                  >
+                    <Icon
+                      name="camera"
+                      color="#E9EDE9"
+                      type="ionicon"
+                      size={100}
+                    />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={{ marginHorizontal: 10 }}
+                    onPress={() => chooseImage(true)}
+                  >
+                    <Icon name="collections" color="#E9EDE9" size={100} />
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          </View>
+        </Modal>
         <View style={styles.inputContainer}>
           <Text style={styles.placeholder}>Nombre</Text>
           <TextInput

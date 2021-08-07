@@ -54,14 +54,15 @@ export default function Garment({ garmentInfo, navigation }) {
               fontWeight: "800",
               textAlign: "center",
               marginVertical: 5,
+              textAlign: "center",
             }}
           >
             {garmentInfo.category}
           </Text>
-          <Text style={{ color: "#E9EDE9", marginVertical: 2 }}>
+          <Text style={{ color: "#E9EDE9", marginVertical: 2, textAlign: "center" }}>
             Marca: {garmentInfo.brand}
           </Text>
-          <Text style={{ color: "#E9EDE9" }}>Color: {garmentInfo.color}</Text>
+          <Text style={{ color: "#E9EDE9", textAlign: "center" }}>Color: {garmentInfo.color}</Text>
         </View>
       </View>
     </TouchableOpacity>
