@@ -52,18 +52,17 @@ export default function AddGarment({ navigation }) {
 
   const pickImage = async (gallery) => {
     let pickerResulted;
+    const pickerOptions = {
+      allowsEditing: true,
+      mediaTypes: "Images",
+    }
 
     if (!gallery) {
-      pickerResulted = await ImagePicker.launchCameraAsync({
-        allowsEditing: true,
-        mediaTypes: "Images",
-      });
+      pickerResulted = await ImagePicker.launchCameraAsync(pickerOptions);
     } else {
-      pickerResulted = await ImagePicker.launchImageLibraryAsync({
-        allowsEditing: true,
-        mediaTypes: "Images",
-      });
+      pickerResulted = await ImagePicker.launchImageLibraryAsync(pickerOptions);
     }
+
     setImage(pickerResulted.uri);
     setPickerResult(pickerResulted);
   };
@@ -229,13 +228,13 @@ export default function AddGarment({ navigation }) {
         <TouchableOpacity
           style={{
             backgroundColor: "#1BB2EC",
-            borderRadius: 10,
+            borderRadius: 25,
             marginTop: 50,
             alignSelf: "center",
           }}
           onPress={() => handleSubmit()}
         >
-          <Icon name="check" color="#E9EDE9" size={100} />
+          <Icon name="check" color="#E9EDE9" size={80} />
         </TouchableOpacity>
       </View>
     </View>

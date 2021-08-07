@@ -3,7 +3,7 @@ import { View, Text, Image, TouchableOpacity } from "react-native";
 
 export default function Garment({ garmentInfo, navigation }) {
   return (
-    <TouchableOpacity onPress={() => navigation.navigate("EditGarment")}>
+    <TouchableOpacity onPress={() => navigation.navigate("EditGarment", garmentInfo)}>
       <View
         style={
           garmentInfo.last

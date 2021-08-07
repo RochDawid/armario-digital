@@ -127,6 +127,7 @@ export default function Home({ navigation }) {
   });
 
   const updateClothes = async () => {
+    setLoading(true);
     await getClothes().then((res) => {
       setClothes(res);
       setLoading(false);
