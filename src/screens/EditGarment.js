@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   View,
   Text,
@@ -11,147 +11,20 @@ import {
   Switch,
 } from "react-native";
 import { Icon } from "react-native-elements/dist/icons/Icon";
-import * as ImagePicker from "expo-image-picker";
-import { uploadGarmentPhotoAsync } from "../others/photoHandler";
 import { Avatar } from "react-native-elements";
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
-import { auth, db, storage } from "../others/firebase";
 import { useForm, Controller } from "react-hook-form";
+import useGarmentPhoto from '../others/useGarmentPhoto';
 
 export default function EditGarment({ route, navigation }) {
-  const [pickerResult, setPickerResult] = useState();
-  const [showModal, setShowModal] = useState(false);
-  const [uploading, setUploading] = useState(false);
-  const [image, setImage] = useState(route.params.photo);
-
-  const categoryOld = route.params.category;
-  const imageOld = route.params.photo;
-  const brandOld = route.params.brand;
-  const colorOld = route.params.color;
-  const washingOld = route.params.washing;
+  const { image, uploading, showModal, setShowModal, chooseImage, editGarment, deleteGarment } =
+    useGarmentPhoto(navigation, route);
 
   const {
     control,
     handleSubmit,
     formState: { errors },
   } = useForm({ mode: "onSubmit" });
-
-  const chooseImage = async (gallery) => {
-    if (Platform.OS !== "web") {
-      if (!gallery) {
-        const { status } = await ImagePicker.requestCameraPermissionsAsync();
-        if (status !== "granted") {
-          alert(
-            "Necesitamos que nos otorgues permisos para poder cambiar la foto😞"
-          );
-          return;
-        }
-      } else {
-        const { status } =
-          await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (status !== "granted") {
-          alert(
-            "Necesitamos que nos otorgues permisos para poder cambiar la foto😞"
-          );
-          return;
-        }
-      }
-    }
-    await pickImage(gallery);
-    setShowModal(false);
-  };
-
-  const pickImage = async (gallery) => {
-    let pickerResulted;
-    const pickerOptions = {
-      mediaTypes: "Images",
-      quality: 0,
-    };
-
-    if (!gallery) {
-      pickerResulted = await ImagePicker.launchCameraAsync(pickerOptions);
-    } else {
-      pickerResulted = await ImagePicker.launchImageLibraryAsync(pickerOptions);
-    }
-
-    setImage(pickerResulted.uri);
-    setPickerResult(pickerResulted);
-  };
-
-  const onSubmit = async (data) => {
-    try {
-      setUploading(true);
-      let url = imageOld;
-      if (pickerResult) {
-        url = await uploadGarmentPhotoAsync(
-          pickerResult.uri,
-          auth.currentUser.displayName
-        );
-        // delete old image from firebase storage
-        storage.refFromURL(imageOld).delete();
-      }
-      await db
-        .collection("clothes")
-        .where("user", "==", auth.currentUser.email)
-        .get()
-        .then((querySnapshot) => {
-          querySnapshot.forEach((doc) => {
-            if (
-              doc.data().category == categoryOld &&
-              doc.data().brand == brandOld &&
-              doc.data().color == colorOld &&
-              doc.data().photoUrl == imageOld &&
-              doc.data().washing == washingOld
-            ) {
-              db.collection("clothes").doc(doc.id).update({
-                category: data.category,
-                brand: data.brand,
-                color: data.color,
-                photoUrl: url,
-                washing: data.washing,
-              });
-            }
-          });
-        });
-    } catch (e) {
-      console.log(e);
-      alert(
-        "La edición de tu prenda de ropa ha fallado 😞, por favor vuelve a intentarlo."
-      );
-    } finally {
-      setUploading(false);
-      navigation.goBack();
-    }
-  };
-
-  const deleteGarment = async () => {
-    try {
-      storage.refFromURL(imageOld).delete();
-      await db
-        .collection("clothes")
-        .where("user", "==", auth.currentUser.email)
-        .get()
-        .then((querySnapshot) => {
-          querySnapshot.forEach((doc) => {
-            if (
-              doc.data().category == categoryOld &&
-              doc.data().brand == brandOld &&
-              doc.data().color == colorOld &&
-              doc.data().photoUrl == imageOld
-            ) {
-              db.collection("clothes").doc(doc.id).delete();
-            }
-          });
-        });
-    } catch (e) {
-      console.log(e);
-      alert(
-        "Eliminar tu prenda de ropa ha fallado 😞, por favor vuelve a intentarlo."
-      );
-    } finally {
-      navigation.goBack();
-    }
-  };
 
   return uploading ? (
     <View style={styles.uploadingContainer}>
@@ -310,7 +183,7 @@ export default function EditGarment({ route, navigation }) {
       <View>
         <TouchableOpacity
           style={styles.buttonsContainer}
-          onPress={handleSubmit(onSubmit)}
+          onPress={handleSubmit(editGarment)}
         >
           <View style={styles.buttonsContainer2}>
             <Icon
@@ -324,7 +197,7 @@ export default function EditGarment({ route, navigation }) {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.deleteGarmentContainer}
-          onPress={() => deleteGarment()}
+          onPress={deleteGarment}
         >
           <View style={styles.buttonsContainer2}>
             <Icon

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   View,
   Text,
@@ -11,94 +11,19 @@ import {
   Switch,
 } from "react-native";
 import { Icon } from "react-native-elements/dist/icons/Icon";
-import * as ImagePicker from "expo-image-picker";
-import { uploadGarmentPhotoAsync } from "../others/photoHandler";
 import { Avatar } from "react-native-elements";
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
-import { auth, db } from "../others/firebase";
 import { useForm, Controller } from "react-hook-form";
+import useGarmentPhoto from "../others/useGarmentPhoto";
 
 export default function AddGarment({ navigation }) {
-  const [pickerResult, setPickerResult] = useState();
-  const [image, setImage] = useState("");
-  const [uploading, setUploading] = useState(false);
-  const [showModal, setShowModal] = useState(false);
-
+  const { image, uploading, showModal, setShowModal, chooseImage, addGarment } =
+    useGarmentPhoto(navigation);
   const {
     control,
     handleSubmit,
     formState: { errors },
   } = useForm({ mode: "onSubmit" });
-
-  const chooseImage = async (gallery) => {
-    if (Platform.OS !== "web") {
-      if (!gallery) {
-        const { status } = await ImagePicker.requestCameraPermissionsAsync();
-        if (status !== "granted") {
-          alert(
-            "Necesitamos que nos otorgues permisos para poder cambiar la foto😞"
-          );
-          return;
-        }
-      } else {
-        const { status } =
-          await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (status !== "granted") {
-          alert(
-            "Necesitamos que nos otorgues permisos para poder cambiar la foto😞"
-          );
-          return;
-        }
-      }
-    }
-    await pickImage(gallery);
-    setShowModal(false);
-  };
-
-  const pickImage = async (gallery) => {
-    let pickerResulted;
-    const pickerOptions = {
-      mediaTypes: "Images",
-      quality: 0,
-    };
-
-    if (!gallery) {
-      pickerResulted = await ImagePicker.launchCameraAsync(pickerOptions);
-    } else {
-      pickerResulted = await ImagePicker.launchImageLibraryAsync(pickerOptions);
-    }
-
-    setImage(pickerResulted.uri);
-    setPickerResult(pickerResulted);
-  };
-
-  const onSubmit = async (data) => {
-    try {
-      setUploading(true);
-      if (pickerResult && !pickerResult.cancelled) {
-        const url = await uploadGarmentPhotoAsync(
-          pickerResult.uri,
-          auth.currentUser.displayName
-        );
-        db.collection("clothes").add({
-          category: data.category,
-          brand: data.brand,
-          color: data.color,
-          photoUrl: url,
-          washing: data.washing,
-          user: auth.currentUser.email,
-        });
-      }
-    } catch (e) {
-      console.log(e);
-      alert(
-        "La subida de tu prenda de ropa ha fallado 😞, por favor vuelve a intentarlo."
-      );
-    } finally {
-      setUploading(false);
-      navigation.goBack();
-    }
-  };
 
   return uploading ? (
     <View style={styles.uploadingContainer}>
@@ -125,7 +50,7 @@ export default function AddGarment({ navigation }) {
           />
           <Text style={styles.addImageText}>Añadir imagen</Text>
         </TouchableOpacity>
-        <Modal visible={showModal} animated>
+        <Modal visible={showModal}>
           <View style={{ backgroundColor: "#606060", flex: 1 }}>
             <View style={styles.modalContainer}>
               <TouchableOpacity
@@ -261,7 +186,7 @@ export default function AddGarment({ navigation }) {
       <View>
         <TouchableOpacity
           style={styles.buttonsContainer}
-          onPress={handleSubmit(onSubmit)}
+          onPress={handleSubmit(addGarment)}
         >
           <View style={styles.buttonsContainer2}>
             <Icon

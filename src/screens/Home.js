@@ -3,7 +3,6 @@ import {
   Text,
   View,
   TouchableOpacity,
-  Platform,
   ScrollView,
   RefreshControl,
   Modal,
@@ -11,60 +10,16 @@ import {
 } from "react-native";
 import { auth, storage } from "../others/firebase";
 import { Avatar } from "react-native-elements";
-import * as ImagePicker from "expo-image-picker";
 import { Icon } from "react-native-elements/dist/icons/Icon";
-import { uploadImageAsync } from "../others/photoHandler";
 import Tab from "../components/Tab";
 import Garment from "../components/Garment";
 import { getClothes } from "../others/garmentService";
+import useAvatarPhoto from "../others/useAvatarPhoto";
 
 export default function Home({ navigation }) {
   const [clothes, setClothes] = useState([]);
-  const [image, setImage] = useState("");
   const [loading, setLoading] = useState(true);
-  const [showModal, setShowModal] = useState(false);
-
-  const chooseImage = async (gallery) => {
-    if (Platform.OS !== "web") {
-      if (!gallery) {
-        const { status } = await ImagePicker.requestCameraPermissionsAsync();
-        if (status !== "granted") {
-          alert(
-            "Necesitamos que nos otorgues permisos para poder cambiar la foto😞"
-          );
-          return;
-        }
-      } else {
-        const { status } =
-          await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (status !== "granted") {
-          alert(
-            "Necesitamos que nos otorgues permisos para poder cambiar la foto😞"
-          );
-          return;
-        }
-      }
-    }
-    await pickImage(gallery);
-    setShowModal(false);
-  };
-
-  const pickImage = async (gallery) => {
-    let pickerResulted;
-    const pickerOptions = {
-      mediaTypes: "Images",
-      quality: 0,
-    };
-
-    if (!gallery) {
-      pickerResulted = await ImagePicker.launchCameraAsync(pickerOptions);
-    } else {
-      pickerResulted = await ImagePicker.launchImageLibraryAsync(pickerOptions);
-    }
-
-    setImage(pickerResulted.uri);
-    uploadImageAsync(pickerResulted.uri, auth.currentUser.displayName);
-  };
+  const { image, showModal, setShowModal, chooseImage, getLatestImage } = useAvatarPhoto();
 
   const logout = () => {
     auth
@@ -77,17 +32,6 @@ export default function Home({ navigation }) {
           "Algo ha fallado intentando cerrar tu sesión, parece que no queremos que te vayas..."
         )
       );
-  };
-
-  const getLatestImage = async () => {
-    await storage
-      .ref()
-      .child(`photos/${auth?.currentUser?.displayName}_photo`)
-      .getDownloadURL()
-      .then((url) => {
-        setImage(url);
-      })
-      .catch((err) => console.log(err));
   };
 
   useEffect(() => {
