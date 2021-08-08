@@ -105,11 +105,11 @@ export default function AddGarment({ navigation }) {
                 onChangeText={(cat) => onChange(cat)}
               />
             )}
-            name="category"
+            name="name"
             defaultValue=""
           />
-          {errors.category && (
-            <Text style={styles.errorText}>{errors.category.message}</Text>
+          {errors.name && (
+            <Text style={styles.errorText}>{errors.name.message}</Text>
           )}
         </View>
         <View style={styles.inputContainer}>

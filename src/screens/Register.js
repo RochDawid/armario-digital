@@ -7,6 +7,7 @@ import {
   TextInput,
   View,
   Button,
+  KeyboardAvoidingView,
 } from "react-native";
 import Drop from "../components/Drop";
 import { auth } from "../others/firebase";
@@ -36,7 +37,7 @@ export default function Register({ navigation }) {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View style={styles.container}>
+      <KeyboardAvoidingView style={styles.container} behavior="position" keyboardVerticalOffset={-120}>
         <Drop />
         <Text style={styles.header}>Bienvenido a Armario Digital</Text>
         <Text style={styles.p}>
@@ -127,7 +128,7 @@ export default function Register({ navigation }) {
             />
           </View>
         </View>
-      </View>
+      </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
   );
 }

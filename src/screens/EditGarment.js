@@ -114,11 +114,11 @@ export default function EditGarment({ route, navigation }) {
                   onChangeText={(cat) => onChange(cat)}
                 />
               )}
-              name="category"
-              defaultValue={route.params.category}
+              name="name"
+              defaultValue={route.params.name}
             />
-            {errors.category && (
-              <Text style={styles.errorText}>{errors.category.message}</Text>
+            {errors.name && (
+              <Text style={styles.errorText}>{errors.name.message}</Text>
             )}
           </View>
           <View style={styles.inputContainer}>

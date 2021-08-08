@@ -66,7 +66,7 @@ export default function useGarmentPhoto(navigation, route) {
           auth.currentUser.displayName
         );
         db.collection("clothes").add({
-          category: data.category,
+          name: data.name,
           brand: data.brand,
           color: data.color,
           photoUrl: url,
@@ -104,14 +104,14 @@ export default function useGarmentPhoto(navigation, route) {
         .then((querySnapshot) => {
           querySnapshot.forEach((doc) => {
             if (
-              doc.data().category == route.params.category &&
+              doc.data().name == route.params.name &&
               doc.data().brand == route.params.brand &&
               doc.data().color == route.params.color &&
               doc.data().photoUrl == route.params.photo &&
               doc.data().washing == route.params.washing
             ) {
               db.collection("clothes").doc(doc.id).update({
-                category: data.category,
+                name: data.name,
                 brand: data.brand,
                 color: data.color,
                 photoUrl: url,
@@ -141,7 +141,7 @@ export default function useGarmentPhoto(navigation, route) {
         .then((querySnapshot) => {
           querySnapshot.forEach((doc) => {
             if (
-              doc.data().category == route.params.category &&
+              doc.data().name == route.params.name &&
               doc.data().brand == route.params.brand &&
               doc.data().color == route.params.color &&
               doc.data().photoUrl == route.params.photo &&

@@ -24,7 +24,7 @@ export default function Garment({ garmentInfo, navigation, last }) {
               />
             </View>
           )}
-          <Text style={styles.categoryText}>{garmentInfo.category}</Text>
+          <Text style={styles.categoryText}>{garmentInfo.name}</Text>
           <Text style={styles.brandText}>Marca: {garmentInfo.brand}</Text>
           <Text style={styles.colorText}>Color: {garmentInfo.color}</Text>
         </View>

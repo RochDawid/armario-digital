@@ -136,7 +136,7 @@ export default function Home({ navigation }) {
             garmentInfo={{
               brand: garment.brand,
               color: garment.color,
-              category: garment.category,
+              name: garment.name,
               photo: garment.photoUrl,
               washing: garment.washing,
             }}
