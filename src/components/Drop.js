@@ -1,8 +1,8 @@
 import React from "react";
 import { StyleSheet, View } from "react-native";
 
-export default function Drop({ bottom }) {
-  return <View style={bottom ? styles.drop2 : styles.drop} />;
+export default function Drop() {
+  return <View style={styles.drop} />;
 }
 
 const styles = StyleSheet.create({
@@ -14,13 +14,5 @@ const styles = StyleSheet.create({
     borderRadius: 500,
     top: -1625,
     left: -1550,
-  },
-  drop2: {
-    backgroundColor: "#1BB2EC",
-    position: "absolute",
-    height: 600,
-    width: 550,
-    borderRadius: 200,
-    top: 0,
-  },
+  }
 });

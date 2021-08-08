@@ -224,8 +224,8 @@ export default function Home({ navigation }) {
           <Garment
             key={garment.photoUrl}
             navigation={navigation}
+            last={index === clothes.length - 1}
             garmentInfo={{
-              last: index == clothes.length - 1,
               brand: garment.brand,
               color: garment.color,
               category: garment.category,
