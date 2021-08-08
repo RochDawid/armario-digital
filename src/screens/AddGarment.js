@@ -5,7 +5,6 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  ActivityIndicator,
   Keyboard,
   Modal,
   Switch,
@@ -15,6 +14,7 @@ import { Avatar } from "react-native-elements";
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 import { useForm, Controller } from "react-hook-form";
 import useGarmentPhoto from "../others/useGarmentPhoto";
+import Uploading from "../components/Uploading";
 
 export default function AddGarment({ navigation }) {
   const { image, uploading, showModal, setShowModal, chooseImage, addGarment } =
@@ -26,30 +26,25 @@ export default function AddGarment({ navigation }) {
   } = useForm({ mode: "onSubmit" });
 
   return uploading ? (
-    <View style={styles.uploadingContainer}>
-      <ActivityIndicator color="#1BB2EC" animating size="large" />
-      <Text style={{ color: "#E9EDE9" }}>
-        Poniendo tu prenda en el armario...🕗
-      </Text>
-    </View>
+    <Uploading />
   ) : (
     <View style={styles.container}>
+      <TouchableOpacity
+        style={styles.avatarContainer}
+        onPress={() => setShowModal(true)}
+      >
+        <Avatar
+          rounded
+          source={{
+            uri:
+              image ||
+              "https://images.assetsdelivery.com/compings_v2/apoev/apoev1804/apoev180400145.jpg",
+          }}
+          style={styles.avatar}
+        />
+        <Text style={styles.addImageText}>Añadir imagen</Text>
+      </TouchableOpacity>
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-        <TouchableOpacity
-          style={styles.avatarContainer}
-          onPress={() => setShowModal(true)}
-        >
-          <Avatar
-            rounded
-            source={{
-              uri:
-                image ||
-                "https://images.assetsdelivery.com/compings_v2/apoev/apoev1804/apoev180400145.jpg",
-            }}
-            style={styles.avatar}
-          />
-          <Text style={styles.addImageText}>Añadir imagen</Text>
-        </TouchableOpacity>
         <Modal visible={showModal}>
           <View style={{ backgroundColor: "#606060", flex: 1 }}>
             <View style={styles.modalContainer}>
@@ -221,13 +216,6 @@ const styles = StyleSheet.create({
     paddingBottom: 5,
     paddingLeft: 5,
     color: "#E9EDE9",
-  },
-  uploadingContainer: {
-    display: "flex",
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#202832",
   },
   container: { backgroundColor: "#202832", display: "flex", flex: 1 },
   avatarContainer: { marginBottom: 50, alignSelf: "center", marginTop: 50 },

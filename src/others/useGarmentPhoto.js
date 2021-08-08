@@ -88,14 +88,14 @@ export default function useGarmentPhoto(navigation, route) {
   const editGarment = async (data) => {
     try {
       setUploading(true);
-      let url = route.params.image;
+      let url = route.params.photo;
       if (pickerResult) {
         url = await uploadGarmentPhotoAsync(
           pickerResult.uri,
           auth.currentUser.displayName
         );
         // delete old image from firebase storage
-        storage.refFromURL(imageOld).delete();
+        storage.refFromURL(route.params.photo).delete();
       }
       await db
         .collection("clothes")
@@ -107,7 +107,7 @@ export default function useGarmentPhoto(navigation, route) {
               doc.data().category == route.params.category &&
               doc.data().brand == route.params.brand &&
               doc.data().color == route.params.color &&
-              doc.data().photoUrl == route.params.image &&
+              doc.data().photoUrl == route.params.photo &&
               doc.data().washing == route.params.washing
             ) {
               db.collection("clothes").doc(doc.id).update({
@@ -133,7 +133,7 @@ export default function useGarmentPhoto(navigation, route) {
 
   const deleteGarment = async () => {
     try {
-      storage.refFromURL(route.params.image).delete();
+      storage.refFromURL(route.params.photo).delete();
       await db
         .collection("clothes")
         .where("user", "==", auth.currentUser.email)
@@ -144,7 +144,7 @@ export default function useGarmentPhoto(navigation, route) {
               doc.data().category == route.params.category &&
               doc.data().brand == route.params.brand &&
               doc.data().color == route.params.color &&
-              doc.data().photoUrl == route.params.image &&
+              doc.data().photoUrl == route.params.photo &&
               doc.data().washing == route.params.washing
             ) {
               db.collection("clothes").doc(doc.id).delete();

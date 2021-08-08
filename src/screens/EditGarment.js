@@ -5,7 +5,6 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  ActivityIndicator,
   Keyboard,
   Modal,
   Switch,
@@ -14,11 +13,19 @@ import { Icon } from "react-native-elements/dist/icons/Icon";
 import { Avatar } from "react-native-elements";
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 import { useForm, Controller } from "react-hook-form";
-import useGarmentPhoto from '../others/useGarmentPhoto';
+import useGarmentPhoto from "../others/useGarmentPhoto";
+import Uploading from "../components/Uploading";
 
 export default function EditGarment({ route, navigation }) {
-  const { image, uploading, showModal, setShowModal, chooseImage, editGarment, deleteGarment } =
-    useGarmentPhoto(navigation, route);
+  const {
+    image,
+    uploading,
+    showModal,
+    setShowModal,
+    chooseImage,
+    editGarment,
+    deleteGarment,
+  } = useGarmentPhoto(navigation, route);
 
   const {
     control,
@@ -27,30 +34,25 @@ export default function EditGarment({ route, navigation }) {
   } = useForm({ mode: "onSubmit" });
 
   return uploading ? (
-    <View style={styles.uploadingContainer}>
-      <ActivityIndicator color="#1BB2EC" animating size="large" />
-      <Text style={{ color: "#E9EDE9" }}>
-        Cambiando tu prenda del armario...🕗
-      </Text>
-    </View>
+    <Uploading />
   ) : (
     <View style={styles.container}>
+      <TouchableOpacity
+        style={styles.avatarContainer}
+        onPress={() => setShowModal(true)}
+      >
+        <Avatar
+          rounded
+          source={{
+            uri:
+              image ||
+              "https://images.assetsdelivery.com/compings_v2/apoev/apoev1804/apoev180400145.jpg",
+          }}
+          style={styles.avatar}
+        />
+        <Text style={styles.addImageText}>Cambiar imagen</Text>
+      </TouchableOpacity>
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-        <TouchableOpacity
-          style={styles.avatarContainer}
-          onPress={() => setShowModal(true)}
-        >
-          <Avatar
-            rounded
-            source={{
-              uri:
-                image ||
-                "https://images.assetsdelivery.com/compings_v2/apoev/apoev1804/apoev180400145.jpg",
-            }}
-            style={styles.avatar}
-          />
-          <Text style={styles.addImageText}>Cambiar imagen</Text>
-        </TouchableOpacity>
         <Modal visible={showModal} animated>
           <View style={{ backgroundColor: "#606060", flex: 1 }}>
             <View style={styles.modalContainer}>
@@ -87,97 +89,99 @@ export default function EditGarment({ route, navigation }) {
             </View>
           </View>
         </Modal>
-        <View style={styles.inputContainer}>
-          <Text style={styles.placeholder}>Nombre*</Text>
-          <Controller
-            control={control}
-            rules={{
-              required:
-                "¡No seas tan vag@! Introduce el nombre de la prenda...",
-              minLength: {
-                value: 3,
-                message: "¡Alegría! Pon al menos 3 carácteres...",
-              },
-              maxLength: {
-                value: 20,
-                message: "Tampoco te pases, con 20 carácteres vas sobrad@...",
-              },
-            }}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <TextInput
-                style={styles.input}
-                value={value}
-                onBlur={onBlur}
-                onChangeText={(cat) => onChange(cat)}
-              />
+        <View style={styles.inputsContainer}>
+          <View style={styles.inputContainer}>
+            <Text style={styles.placeholder}>Nombre*</Text>
+            <Controller
+              control={control}
+              rules={{
+                required:
+                  "¡No seas tan vag@! Introduce el nombre de la prenda...",
+                minLength: {
+                  value: 3,
+                  message: "¡Alegría! Pon al menos 3 carácteres...",
+                },
+                maxLength: {
+                  value: 20,
+                  message: "Tampoco te pases, con 20 carácteres vas sobrad@...",
+                },
+              }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput
+                  style={styles.input}
+                  value={value}
+                  onBlur={onBlur}
+                  onChangeText={(cat) => onChange(cat)}
+                />
+              )}
+              name="category"
+              defaultValue={route.params.category}
+            />
+            {errors.category && (
+              <Text style={styles.errorText}>{errors.category.message}</Text>
             )}
-            name="category"
-            defaultValue={route.params.category}
-          />
-          {errors.category && (
-            <Text style={styles.errorText}>{errors.category.message}</Text>
-          )}
-        </View>
-        <View style={styles.inputContainer}>
-          <Text style={styles.placeholder}>Marca*</Text>
-          <Controller
-            control={control}
-            rules={{
-              required: "Introduce la marca",
-            }}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <TextInput
-                style={styles.input}
-                value={value}
-                onBlur={onBlur}
-                onChangeText={(val) => onChange(val)}
-              />
+          </View>
+          <View style={styles.inputContainer}>
+            <Text style={styles.placeholder}>Marca*</Text>
+            <Controller
+              control={control}
+              rules={{
+                required: "Introduce la marca",
+              }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput
+                  style={styles.input}
+                  value={value}
+                  onBlur={onBlur}
+                  onChangeText={(val) => onChange(val)}
+                />
+              )}
+              name="brand"
+              defaultValue={route.params.brand}
+            />
+            {errors.brand && (
+              <Text style={styles.errorText}>{errors.brand.message}</Text>
             )}
-            name="brand"
-            defaultValue={route.params.brand}
-          />
-          {errors.brand && (
-            <Text style={styles.errorText}>{errors.brand.message}</Text>
-          )}
-        </View>
-        <View style={styles.inputContainer}>
-          <Text style={styles.placeholder}>Color*</Text>
-          <Controller
-            control={control}
-            rules={{
-              required: "Introduce el color",
-            }}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <TextInput
-                style={styles.input}
-                value={value}
-                onBlur={onBlur}
-                onChangeText={(val) => onChange(val)}
-              />
+          </View>
+          <View style={styles.inputContainer}>
+            <Text style={styles.placeholder}>Color*</Text>
+            <Controller
+              control={control}
+              rules={{
+                required: "Introduce el color",
+              }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput
+                  style={styles.input}
+                  value={value}
+                  onBlur={onBlur}
+                  onChangeText={(val) => onChange(val)}
+                />
+              )}
+              name="color"
+              defaultValue={route.params.color}
+            />
+            {errors.color && (
+              <Text style={styles.errorText}>{errors.color.message}</Text>
             )}
-            name="color"
-            defaultValue={route.params.color}
-          />
-          {errors.color && (
-            <Text style={styles.errorText}>{errors.color.message}</Text>
-          )}
-        </View>
-        <View style={styles.washingContainer}>
-          <Text style={styles.washingText}>¿En la lavadora?</Text>
-          <Controller
-            control={control}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <Switch
-                onValueChange={(value) => onChange(value)}
-                value={value}
-                onBlur={onBlur}
-                thumbColor="#1BB2EC"
-                trackColor={{ true: "#E9EDE9" }}
-              />
-            )}
-            name="washing"
-            defaultValue={route.params.washing}
-          />
+          </View>
+          <View style={styles.washingContainer}>
+            <Text style={styles.washingText}>¿En la lavadora?</Text>
+            <Controller
+              control={control}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <Switch
+                  onValueChange={(value) => onChange(value)}
+                  value={value}
+                  onBlur={onBlur}
+                  thumbColor="#1BB2EC"
+                  trackColor={{ true: "#E9EDE9" }}
+                />
+              )}
+              name="washing"
+              defaultValue={route.params.washing}
+            />
+          </View>
         </View>
       </TouchableWithoutFeedback>
       <View>
@@ -215,10 +219,13 @@ export default function EditGarment({ route, navigation }) {
 }
 
 const styles = StyleSheet.create({
+  inputsContainer: {
+    paddingTop: 40,
+  },
   inputContainer: {
     width: "70%",
     alignSelf: "center",
-    marginVertical: 10,
+    paddingVertical: 10,
   },
   input: {
     borderWidth: 1,
@@ -233,15 +240,13 @@ const styles = StyleSheet.create({
     paddingLeft: 5,
     color: "#E9EDE9",
   },
-  uploadingContainer: {
+  container: {
+    backgroundColor: "#202832",
     display: "flex",
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#202832",
+    paddingTop: 50,
   },
-  container: { backgroundColor: "#202832", display: "flex", flex: 1 },
-  avatarContainer: { marginBottom: 50, alignSelf: "center", marginTop: 50 },
+  avatarContainer: { alignSelf: "center", zIndex: 1 },
   avatar: {
     height: 150,
     width: 150,
