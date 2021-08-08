@@ -62,7 +62,7 @@ export default function Register({ navigation }) {
               defaultValue=""
             />
             {errors.name && (
-              <Text style={{ color: "red", padding: 5 }}>
+              <Text style={{ color: "red", paddingTop: 5, paddingLeft: 5, fontSize: 12 }}>
                 Introduce tu nombre
               </Text>
             )}
@@ -86,7 +86,7 @@ export default function Register({ navigation }) {
               defaultValue=""
             />
             {errors.email && (
-              <Text style={{ color: "red", padding: 5 }}>
+              <Text style={{ color: "red", paddingTop: 5, paddingLeft: 5, fontSize: 12 }}>
                 Introduce el correo electrónico
               </Text>
             )}
@@ -111,7 +111,7 @@ export default function Register({ navigation }) {
               defaultValue=""
             />
             {errors.password && (
-              <Text style={{ color: "red", padding: 5 }}>
+              <Text style={{ color: "red", paddingTop: 5, paddingLeft: 5, fontSize: 12 }}>
                 Introduce la contraseña
               </Text>
             )}

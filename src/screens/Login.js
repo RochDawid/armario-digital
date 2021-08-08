@@ -70,7 +70,7 @@ export default function Login({ navigation }) {
               defaultValue=""
             />
             {errors.email && (
-              <Text style={{ color: "red", padding: 5 }}>Introduce el correo electrónico</Text>
+              <Text style={{ color: "red", paddingTop: 5, paddingLeft: 5, fontSize: 12 }}>Introduce el correo electrónico</Text>
             )}
           </View>
           <View style={styles.input}>
@@ -93,7 +93,7 @@ export default function Login({ navigation }) {
               defaultValue=""
             />
             {errors.password && (
-              <Text style={{ color: "red", padding: 5 }}>Introduce la contraseña</Text>
+              <Text style={{ color: "red", paddingTop: 5, paddingLeft: 5, fontSize: 12 }}>Introduce la contraseña</Text>
             )}
           </View>
         </View>

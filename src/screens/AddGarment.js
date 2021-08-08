@@ -16,16 +16,19 @@ import { uploadGarmentPhotoAsync } from "../others/photoHandler";
 import { Avatar } from "react-native-elements";
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 import { auth, db } from "../others/firebase";
+import { useForm, Controller } from "react-hook-form";
 
 export default function AddGarment({ navigation }) {
   const [pickerResult, setPickerResult] = useState();
   const [image, setImage] = useState("");
-  const [category, setCategory] = useState("");
-  const [brand, setBrand] = useState("");
-  const [color, setColor] = useState("");
   const [uploading, setUploading] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const [washing, setWashing] = useState(false);
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({ mode: "onSubmit" });
 
   const chooseImage = async (gallery) => {
     if (Platform.OS !== "web") {
@@ -69,7 +72,7 @@ export default function AddGarment({ navigation }) {
     setPickerResult(pickerResulted);
   };
 
-  const handleSubmit = async () => {
+  const onSubmit = async (data) => {
     try {
       setUploading(true);
       if (pickerResult && !pickerResult.cancelled) {
@@ -78,11 +81,11 @@ export default function AddGarment({ navigation }) {
           auth.currentUser.displayName
         );
         db.collection("clothes").add({
-          category,
-          brand,
-          color,
+          category: data.category,
+          brand: data.brand,
+          color: data.color,
           photoUrl: url,
-          washing,
+          washing: data.washing,
           user: auth.currentUser.email,
         });
       }
@@ -137,94 +140,167 @@ export default function AddGarment({ navigation }) {
           Añadir imagen
         </Text>
       </TouchableOpacity>
-      <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-        <Modal visible={showModal} animated>
-          <View style={{ backgroundColor: "#606060", flex: 1 }}>
-            <View
-              style={{
-                display: "block",
-                backgroundColor: "#202832",
-                borderRadius: 15,
-                borderWidth: 3,
-                borderColor: "#1BB2EC",
-                width: 300,
-                height: 250,
-                alignSelf: "center",
-                top: 250,
-                opacity: 1,
-              }}
+      <Modal visible={showModal} animated>
+        <View style={{ backgroundColor: "#606060", flex: 1 }}>
+          <View
+            style={{
+              display: "block",
+              backgroundColor: "#202832",
+              borderRadius: 15,
+              borderWidth: 3,
+              borderColor: "#1BB2EC",
+              width: 300,
+              height: 250,
+              alignSelf: "center",
+              top: 250,
+              opacity: 1,
+            }}
+          >
+            <TouchableOpacity
+              style={{ alignSelf: "flex-end", padding: 10 }}
+              onPress={() => setShowModal(false)}
             >
-              <TouchableOpacity
-                style={{ alignSelf: "flex-end", padding: 10 }}
-                onPress={() => setShowModal(false)}
+              <Icon name="close" color="#E9EDE9" size={35} />
+            </TouchableOpacity>
+            <View style={{ alignSelf: "center", flexDirection: "column" }}>
+              <Text
+                style={{
+                  color: "#E9EDE9",
+                  textAlign: "center",
+                  fontWeight: "bold",
+                  marginBottom: 30,
+                  marginTop: 10,
+                }}
               >
-                <Icon name="close" color="#E9EDE9" size={35} />
-              </TouchableOpacity>
-              <View style={{ alignSelf: "center", flexDirection: "column" }}>
-                <Text
-                  style={{
-                    color: "#E9EDE9",
-                    textAlign: "center",
-                    fontWeight: "bold",
-                    marginBottom: 30,
-                    marginTop: 10,
-                  }}
+                ¿De dónde quieres sacar la foto?
+              </Text>
+              <View
+                style={{
+                  alignSelf: "center",
+                  flexDirection: "row",
+                  alignContent: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <TouchableOpacity
+                  style={{ marginHorizontal: 10 }}
+                  onPress={() => chooseImage(false)}
                 >
-                  ¿De dónde quieres sacar la foto?
-                </Text>
-                <View
-                  style={{
-                    alignSelf: "center",
-                    flexDirection: "row",
-                    alignContent: "center",
-                    justifyContent: "center",
-                  }}
+                  <Icon
+                    name="camera"
+                    color="#E9EDE9"
+                    type="ionicon"
+                    size={100}
+                  />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={{ marginHorizontal: 10 }}
+                  onPress={() => chooseImage(true)}
                 >
-                  <TouchableOpacity
-                    style={{ marginHorizontal: 10 }}
-                    onPress={() => chooseImage(false)}
-                  >
-                    <Icon
-                      name="camera"
-                      color="#E9EDE9"
-                      type="ionicon"
-                      size={100}
-                    />
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={{ marginHorizontal: 10 }}
-                    onPress={() => chooseImage(true)}
-                  >
-                    <Icon name="collections" color="#E9EDE9" size={100} />
-                  </TouchableOpacity>
-                </View>
+                  <Icon name="collections" color="#E9EDE9" size={100} />
+                </TouchableOpacity>
               </View>
             </View>
           </View>
-        </Modal>
+        </View>
+      </Modal>
+      <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
         <View style={styles.inputContainer}>
-          <Text style={styles.placeholder}>Nombre</Text>
-          <TextInput
-            style={styles.input}
-            defaultValue={category}
-            onChangeText={(cat) => setCategory(cat)}
+          <Text style={styles.placeholder}>Nombre*</Text>
+          <Controller
+            control={control}
+            rules={{
+              required: "Introduce tu nombre",
+              minLength: {
+                value: 3,
+                message: "El nombre debe tener al menos 3 carácteres",
+              },
+            }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                style={styles.input}
+                value={value}
+                onBlur={onBlur}
+                onChangeText={(cat) => onChange(cat)}
+              />
+            )}
+            name="category"
+            defaultValue=""
           />
+          {errors.category && (
+            <Text
+              style={{
+                color: "red",
+                paddingTop: 5,
+                paddingLeft: 5,
+                fontSize: 12,
+              }}
+            >
+              {errors.category.message}
+            </Text>
+          )}
         </View>
         <View style={styles.inputContainer}>
-          <Text style={styles.placeholder}>Marca</Text>
-          <TextInput
-            style={styles.input}
-            defaultValue={brand}
-            onChangeText={(bra) => setBrand(bra)}
+          <Text style={styles.placeholder}>Marca*</Text>
+          <Controller
+            control={control}
+            rules={{
+              required: "Introduce la marca",
+            }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                style={styles.input}
+                value={value}
+                onBlur={onBlur}
+                onChangeText={(val) => onChange(val)}
+              />
+            )}
+            name="brand"
+            defaultValue=""
           />
+          {errors.brand && (
+            <Text
+              style={{
+                color: "red",
+                paddingTop: 5,
+                paddingLeft: 5,
+                fontSize: 12,
+              }}
+            >
+              {errors.brand.message}
+            </Text>
+          )}
         </View>
         <View style={styles.inputContainer}>
-          <Text style={styles.placeholder}>Color</Text>
-          <TextInput
-            style={styles.input}
-            defaultValue={color}
-            onChangeText={(col) => setColor(col)}
+          <Text style={styles.placeholder}>Color*</Text>
+          <Controller
+            control={control}
+            rules={{
+              required: "Introduce el color",
+            }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                style={styles.input}
+                value={value}
+                onBlur={onBlur}
+                onChangeText={(val) => onChange(val)}
+              />
+            )}
+            name="color"
+            defaultValue=""
           />
+          {errors.color && (
+            <Text
+              style={{
+                color: "red",
+                paddingTop: 5,
+                paddingLeft: 5,
+                fontSize: 12,
+              }}
+            >
+              {errors.color.message}
+            </Text>
+          )}
         </View>
         <View
           style={{
@@ -238,11 +314,22 @@ export default function AddGarment({ navigation }) {
           <Text style={{ color: "#E9EDE9", paddingRight: 10 }}>
             ¿En la lavadora?
           </Text>
-          <Switch
-            onValueChange={(value) => setWashing(value)}
-            value={washing}
-            thumbColor="#1BB2EC"
-            trackColor={{ true: "#E9EDE9" }}
+          <Controller
+            control={control}
+            rules={{
+              required: "Introduce la marca",
+            }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <Switch
+                onValueChange={(value) => onChange(value)}
+                value={value}
+                onBlur={onBlur}
+                thumbColor="#1BB2EC"
+                trackColor={{ true: "#E9EDE9" }}
+              />
+            )}
+            name="washing"
+            defaultValue=""
           />
         </View>
       </TouchableWithoutFeedback>
@@ -254,7 +341,7 @@ export default function AddGarment({ navigation }) {
             borderRadius: 25,
             marginTop: 50,
           }}
-          onPress={() => handleSubmit()}
+          onPress={handleSubmit(onSubmit)}
         >
           <View
             style={{

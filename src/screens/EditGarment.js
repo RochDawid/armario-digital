@@ -16,22 +16,25 @@ import { uploadGarmentPhotoAsync } from "../others/photoHandler";
 import { Avatar } from "react-native-elements";
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 import { auth, db, storage } from "../others/firebase";
+import { useForm, Controller } from "react-hook-form";
 
 export default function EditGarment({ route, navigation }) {
   const [pickerResult, setPickerResult] = useState();
   const [showModal, setShowModal] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [washing, setWashing] = useState(route.params.washing);
   const [image, setImage] = useState(route.params.photo);
-  const [category, setCategory] = useState(route.params.category);
-  const [brand, setBrand] = useState(route.params.brand);
-  const [color, setColor] = useState(route.params.color);
 
   const categoryOld = route.params.category;
   const imageOld = route.params.photo;
   const brandOld = route.params.brand;
   const colorOld = route.params.color;
   const washingOld = route.params.washing;
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({ mode: "onSubmit" });
 
   const chooseImage = async (gallery) => {
     if (Platform.OS !== "web") {
@@ -75,8 +78,9 @@ export default function EditGarment({ route, navigation }) {
     setPickerResult(pickerResulted);
   };
 
-  const handleSubmit = async () => {
+  const onSubmit = async (data) => {
     try {
+      console.log('on submit method');
       setUploading(true);
       let url = imageOld;
       if (pickerResult) {
@@ -102,7 +106,7 @@ export default function EditGarment({ route, navigation }) {
             ) {
               db.collection("clothes")
                 .doc(doc.id)
-                .update({ category, brand, color, photoUrl: url, washing });
+                .update({ category: data.category, brand: data.brand, color: data.color, photoUrl: url, washing: data.washing });
             }
           });
         });
@@ -183,7 +187,7 @@ export default function EditGarment({ route, navigation }) {
           }}
         />
         <Text style={{ alignSelf: "center", paddingTop: 5, color: "#E9EDE9" }}>
-          Añadir imagen
+          Cambiar imagen
         </Text>
       </TouchableOpacity>
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -252,28 +256,101 @@ export default function EditGarment({ route, navigation }) {
           </View>
         </Modal>
         <View style={styles.inputContainer}>
-          <Text style={styles.placeholder}>Nombre</Text>
-          <TextInput
-            style={styles.input}
-            defaultValue={category}
-            onChangeText={(cat) => setCategory(cat)}
+          <Text style={styles.placeholder}>Nombre*</Text>
+          <Controller
+            control={control}
+            rules={{
+              required: "Introduce tu nombre",
+              minLength: {
+                value: 3,
+                message: "El nombre debe tener al menos 3 carácteres",
+              },
+            }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                style={styles.input}
+                value={value}
+                onBlur={onBlur}
+                onChangeText={(cat) => onChange(cat)}
+              />
+            )}
+            name="category"
+            defaultValue={route.params.category}
           />
+          {errors.category && (
+            <Text
+              style={{
+                color: "red",
+                paddingTop: 5,
+                paddingLeft: 5,
+                fontSize: 12,
+              }}
+            >
+              {errors.category.message}
+            </Text>
+          )}
         </View>
         <View style={styles.inputContainer}>
-          <Text style={styles.placeholder}>Marca</Text>
-          <TextInput
-            style={styles.input}
-            defaultValue={brand}
-            onChangeText={(bra) => setBrand(bra)}
+          <Text style={styles.placeholder}>Marca*</Text>
+          <Controller
+            control={control}
+            rules={{
+              required: "Introduce la marca",
+            }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                style={styles.input}
+                value={value}
+                onBlur={onBlur}
+                onChangeText={(val) => onChange(val)}
+              />
+            )}
+            name="brand"
+            defaultValue={route.params.brand}
           />
+          {errors.brand && (
+            <Text
+              style={{
+                color: "red",
+                paddingTop: 5,
+                paddingLeft: 5,
+                fontSize: 12,
+              }}
+            >
+              {errors.brand.message}
+            </Text>
+          )}
         </View>
         <View style={styles.inputContainer}>
-          <Text style={styles.placeholder}>Color</Text>
-          <TextInput
-            style={styles.input}
-            defaultValue={color}
-            onChangeText={(col) => setColor(col)}
+          <Text style={styles.placeholder}>Color*</Text>
+          <Controller
+            control={control}
+            rules={{
+              required: "Introduce el color",
+            }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                style={styles.input}
+                value={value}
+                onBlur={onBlur}
+                onChangeText={(val) => onChange(val)}
+              />
+            )}
+            name="color"
+            defaultValue={route.params.color}
           />
+          {errors.color && (
+            <Text
+              style={{
+                color: "red",
+                paddingTop: 5,
+                paddingLeft: 5,
+                fontSize: 12,
+              }}
+            >
+              {errors.color.message}
+            </Text>
+          )}
         </View>
         <View
           style={{
@@ -287,11 +364,19 @@ export default function EditGarment({ route, navigation }) {
           <Text style={{ color: "#E9EDE9", paddingRight: 10 }}>
             ¿En la lavadora?
           </Text>
-          <Switch
-            onValueChange={(value) => setWashing(value)}
-            value={washing}
-            thumbColor="#1BB2EC"
-            trackColor={{ true: "#E9EDE9" }}
+          <Controller
+            control={control}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <Switch
+                onValueChange={(value) => onChange(value)}
+                value={value}
+                onBlur={onBlur}
+                thumbColor="#1BB2EC"
+                trackColor={{ true: "#E9EDE9" }}
+              />
+            )}
+            name="washing"
+            defaultValue={route.params.washing}
           />
         </View>
       </TouchableWithoutFeedback>
@@ -303,7 +388,7 @@ export default function EditGarment({ route, navigation }) {
             borderRadius: 25,
             marginTop: 50,
           }}
-          onPress={() => handleSubmit()}
+          onPress={handleSubmit(onSubmit)}
         >
           <View
             style={{

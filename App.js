@@ -11,7 +11,7 @@ import EditGarment from "./src/screens/EditGarment";
 
 export default function App() {
   const Stack = createStackNavigator();
-
+  
   return (
     <NavigationContainer>
       <View style={styles.container}>

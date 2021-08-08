@@ -7,6 +7,7 @@ import {
   ActivityIndicator,
   ScrollView,
   RefreshControl,
+  Modal,
 } from "react-native";
 import { auth, storage } from "../others/firebase";
 import { Avatar } from "react-native-elements";
@@ -20,8 +21,50 @@ import { getClothes } from "../others/garmentService";
 export default function Home({ navigation }) {
   const [clothes, setClothes] = useState([]);
   const [image, setImage] = useState("");
-  const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+
+  const chooseImage = async (gallery) => {
+    if (Platform.OS !== "web") {
+      if (!gallery) {
+        const { status } = await ImagePicker.requestCameraPermissionsAsync();
+        if (status !== "granted") {
+          alert(
+            "Necesitamos que nos otorgues permisos para poder cambiar la foto😞"
+          );
+          return;
+        }
+      } else {
+        const { status } =
+          await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (status !== "granted") {
+          alert(
+            "Necesitamos que nos otorgues permisos para poder cambiar la foto😞"
+          );
+          return;
+        }
+      }
+    }
+    await pickImage(gallery);
+    setShowModal(false);
+  };
+
+  const pickImage = async (gallery) => {
+    let pickerResulted;
+    const pickerOptions = {
+      mediaTypes: "Images",
+      quality: 0,
+    };
+
+    if (!gallery) {
+      pickerResulted = await ImagePicker.launchCameraAsync(pickerOptions);
+    } else {
+      pickerResulted = await ImagePicker.launchImageLibraryAsync(pickerOptions);
+    }
+
+    setImage(pickerResulted.uri);
+    uploadImageAsync(pickerResulted.uri, auth.currentUser.displayName);
+  };
 
   const logout = () => {
     auth
@@ -36,17 +79,8 @@ export default function Home({ navigation }) {
       );
   };
 
-  const pickImage = async () => {
-    let pickerResult = await ImagePicker.launchImageLibraryAsync({
-      allowsEditing: true,
-      mediaTypes: "Images",
-    });
-
-    handleImagePicked(pickerResult);
-  };
-
-  const getLatestImage = () => {
-    storage
+  const getLatestImage = async () => {
+    await storage
       .ref()
       .child(`photos/${auth?.currentUser?.displayName}_photo`)
       .getDownloadURL()
@@ -56,45 +90,12 @@ export default function Home({ navigation }) {
       .catch((err) => console.log(err));
   };
 
-  const handleImagePicked = async (pickerResult) => {
-    try {
-      setUploading(true);
-      if (!pickerResult.cancelled) {
-        const uploadUrl = await uploadImageAsync(
-          pickerResult.uri,
-          auth.currentUser.displayName
-        );
-        setImage(uploadUrl);
-      }
-    } catch (e) {
-      alert("La subida de tu imagen ha fallado disculpa :(");
-    } finally {
-      setUploading(false);
-    }
-  };
-
-  const changeAvatar = async () => {
-    if (Platform.OS !== "web") {
-      const { status } =
-        await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (status !== "granted") {
-        alert(
-          "Necesitamos que nos otorgues permisos para poder modificar tu foto de perfil"
-        );
-        return;
-      }
-    }
-    pickImage();
-  };
-
   useEffect(() => {
     updateClothes();
-
-    return setLoading(false);
-  }, [clothes]);
+    getLatestImage();
+  }, []);
 
   useLayoutEffect(() => {
-    getLatestImage();
     navigation.setOptions({
       headerTitle: `Armario de ${auth?.currentUser?.displayName}`,
       headerStyle: {
@@ -110,7 +111,71 @@ export default function Home({ navigation }) {
         </TouchableOpacity>
       ),
       headerLeft: () => (
-        <TouchableOpacity onPress={() => changeAvatar()}>
+        <TouchableOpacity onPress={() => setShowModal(true)}>
+          <Modal visible={showModal} animated>
+            <View style={{ backgroundColor: "#606060", flex: 1 }}>
+              <View
+                style={{
+                  display: "block",
+                  backgroundColor: "#202832",
+                  borderRadius: 15,
+                  borderWidth: 3,
+                  borderColor: "#1BB2EC",
+                  width: 300,
+                  height: 250,
+                  alignSelf: "center",
+                  top: 250,
+                  opacity: 1,
+                }}
+              >
+                <TouchableOpacity
+                  style={{ alignSelf: "flex-end", padding: 10 }}
+                  onPress={() => setShowModal(false)}
+                >
+                  <Icon name="close" color="#E9EDE9" size={35} />
+                </TouchableOpacity>
+                <View style={{ alignSelf: "center", flexDirection: "column" }}>
+                  <Text
+                    style={{
+                      color: "#E9EDE9",
+                      textAlign: "center",
+                      fontWeight: "bold",
+                      marginBottom: 30,
+                      marginTop: 10,
+                    }}
+                  >
+                    ¿De dónde quieres sacar la foto?
+                  </Text>
+                  <View
+                    style={{
+                      alignSelf: "center",
+                      flexDirection: "row",
+                      alignContent: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <TouchableOpacity
+                      style={{ marginHorizontal: 10 }}
+                      onPress={() => chooseImage(false)}
+                    >
+                      <Icon
+                        name="camera"
+                        color="#E9EDE9"
+                        type="ionicon"
+                        size={100}
+                      />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={{ marginHorizontal: 10 }}
+                      onPress={() => chooseImage(true)}
+                    >
+                      <Icon name="collections" color="#E9EDE9" size={100} />
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+            </View>
+          </Modal>
           <View style={{ marginLeft: 20 }}>
             <Avatar
               rounded
@@ -134,32 +199,7 @@ export default function Home({ navigation }) {
     });
   };
 
-  return uploading ? (
-    <View
-      style={{
-        display: "flex",
-        flex: "1",
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: "lightgray",
-      }}
-    >
-      <ActivityIndicator color="white" animating size="large" />
-      <Text style={{ color: "white" }}>Subiendo tu imagen a la nube...</Text>
-    </View>
-  ) : loading ? (
-    <View
-      style={{
-        display: "flex",
-        flex: "1",
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: "#202832",
-      }}
-    >
-      <ActivityIndicator size="large" animating color="#1BB2EC" />
-    </View>
-  ) : (
+  return (
     <View
       style={{
         display: "flex",
