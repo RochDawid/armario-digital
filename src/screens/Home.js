@@ -4,10 +4,10 @@ import {
   View,
   TouchableOpacity,
   Platform,
-  ActivityIndicator,
   ScrollView,
   RefreshControl,
   Modal,
+  StyleSheet,
 } from "react-native";
 import { auth, storage } from "../others/firebase";
 import { Avatar } from "react-native-elements";
@@ -115,46 +115,18 @@ export default function Home({ navigation }) {
         <TouchableOpacity onPress={() => setShowModal(true)}>
           <Modal visible={showModal} animated>
             <View style={{ backgroundColor: "#606060", flex: 1 }}>
-              <View
-                style={{
-                  display: "block",
-                  backgroundColor: "#202832",
-                  borderRadius: 15,
-                  borderWidth: 3,
-                  borderColor: "#1BB2EC",
-                  width: 300,
-                  height: 250,
-                  alignSelf: "center",
-                  top: 250,
-                  opacity: 1,
-                }}
-              >
+              <View style={styles.modalContainer}>
                 <TouchableOpacity
-                  style={{ alignSelf: "flex-end", padding: 10 }}
+                  style={styles.closeModalContainer}
                   onPress={() => setShowModal(false)}
                 >
                   <Icon name="close" color="#E9EDE9" size={35} />
                 </TouchableOpacity>
                 <View style={{ alignSelf: "center", flexDirection: "column" }}>
-                  <Text
-                    style={{
-                      color: "#E9EDE9",
-                      textAlign: "center",
-                      fontWeight: "bold",
-                      marginBottom: 30,
-                      marginTop: 10,
-                    }}
-                  >
+                  <Text style={styles.modalText}>
                     ¿De dónde quieres sacar la foto?
                   </Text>
-                  <View
-                    style={{
-                      alignSelf: "center",
-                      flexDirection: "row",
-                      alignContent: "center",
-                      justifyContent: "center",
-                    }}
-                  >
+                  <View style={styles.chooseContainer}>
                     <TouchableOpacity
                       style={{ marginHorizontal: 10 }}
                       onPress={() => chooseImage(false)}
@@ -201,15 +173,7 @@ export default function Home({ navigation }) {
   };
 
   return (
-    <View
-      style={{
-        display: "flex",
-        flex: "1",
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: "#202832",
-      }}
-    >
+    <View style={styles.container}>
       <ScrollView
         style={{ width: "100%" }}
         refreshControl={
@@ -239,3 +203,39 @@ export default function Home({ navigation }) {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  modalContainer: {
+    display: "block",
+    backgroundColor: "#202832",
+    borderRadius: 15,
+    borderWidth: 3,
+    borderColor: "#1BB2EC",
+    width: 300,
+    height: 250,
+    alignSelf: "center",
+    top: 250,
+    opacity: 1,
+  },
+  closeModalContainer: { alignSelf: "flex-end", padding: 10 },
+  modalText: {
+    color: "#E9EDE9",
+    textAlign: "center",
+    fontWeight: "bold",
+    marginBottom: 30,
+    marginTop: 10,
+  },
+  chooseContainer: {
+    alignSelf: "center",
+    flexDirection: "row",
+    alignContent: "center",
+    justifyContent: "center",
+  },
+  container: {
+    display: "flex",
+    flex: "1",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#202832",
+  },
+});
