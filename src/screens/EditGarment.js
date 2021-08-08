@@ -362,7 +362,7 @@ const styles = StyleSheet.create({
   },
   uploadingContainer: {
     display: "flex",
-    flex: "1",
+    flex: 1,
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#202832",
@@ -378,7 +378,6 @@ const styles = StyleSheet.create({
   },
   addImageText: { alignSelf: "center", paddingTop: 5, color: "#E9EDE9" },
   modalContainer: {
-    display: "block",
     backgroundColor: "#202832",
     borderRadius: 15,
     borderWidth: 3,
@@ -387,7 +386,6 @@ const styles = StyleSheet.create({
     height: 250,
     alignSelf: "center",
     top: 250,
-    opacity: 1,
   },
   closeContainer: { alignSelf: "flex-end", padding: 10 },
   modalContainer2: { alignSelf: "center", flexDirection: "column" },
