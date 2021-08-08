@@ -17,7 +17,7 @@ export default function Login({ navigation }) {
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm({ mode: 'onSubmit' });
+  } = useForm({ mode: "onSubmit" });
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((authUser) => {
@@ -44,8 +44,8 @@ export default function Login({ navigation }) {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View style={{ backgroundColor: "#202832", flex: 1 }}>
-        <Drop bottom={false} />
+      <View style={styles.container}>
+        <Drop />
         <Text style={styles.header}>Bienvenido a Armario Digital</Text>
         <Text style={styles.p}>
           Por favor, inicia sesión para entrar a tu armario
@@ -56,7 +56,7 @@ export default function Login({ navigation }) {
             <Controller
               control={control}
               rules={{
-                required: true,
+                required: "¡No te olvides del correo electrónico!",
               }}
               render={({ field: { onChange, onBlur, value } }) => (
                 <TextInput
@@ -70,7 +70,7 @@ export default function Login({ navigation }) {
               defaultValue=""
             />
             {errors.email && (
-              <Text style={{ color: "red", paddingTop: 5, paddingLeft: 5, fontSize: 12 }}>Introduce el correo electrónico</Text>
+              <Text style={styles.errorText}>{errors.email.message}</Text>
             )}
           </View>
           <View style={styles.input}>
@@ -78,7 +78,7 @@ export default function Login({ navigation }) {
             <Controller
               control={control}
               rules={{
-                required: true,
+                required: "¡No te olvides de la contraseña!",
               }}
               render={({ field: { onChange, onBlur, value } }) => (
                 <TextInput
@@ -93,7 +93,7 @@ export default function Login({ navigation }) {
               defaultValue=""
             />
             {errors.password && (
-              <Text style={{ color: "red", paddingTop: 5, paddingLeft: 5, fontSize: 12 }}>Introduce la contraseña</Text>
+              <Text style={styles.errorText}>{errors.password.message}</Text>
             )}
           </View>
         </View>
@@ -119,6 +119,7 @@ export default function Login({ navigation }) {
 }
 
 const styles = StyleSheet.create({
+  container: { backgroundColor: "#202832", flex: 1 },
   header: {
     marginTop: 75,
     color: "#E9EDE9",
@@ -183,5 +184,11 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
+  },
+  errorText: {
+    color: "red",
+    paddingTop: 5,
+    paddingLeft: 5,
+    fontSize: 12,
   },
 });
