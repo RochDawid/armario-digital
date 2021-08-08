@@ -105,6 +105,7 @@ export default function Home({ navigation }) {
         fontWeight: "bold",
         color: "#E9EDE9",
       },
+      gesturesEnabled: false,
       headerRight: () => (
         <TouchableOpacity onPress={() => logout()}>
           <Icon name="logout" color="#E9EDE9" style={{ marginRight: 20 }} />

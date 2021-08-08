@@ -80,7 +80,6 @@ export default function EditGarment({ route, navigation }) {
 
   const onSubmit = async (data) => {
     try {
-      console.log('on submit method');
       setUploading(true);
       let url = imageOld;
       if (pickerResult) {
@@ -106,7 +105,13 @@ export default function EditGarment({ route, navigation }) {
             ) {
               db.collection("clothes")
                 .doc(doc.id)
-                .update({ category: data.category, brand: data.brand, color: data.color, photoUrl: url, washing: data.washing });
+                .update({
+                  category: data.category,
+                  brand: data.brand,
+                  color: data.color,
+                  photoUrl: url,
+                  washing: data.washing,
+                });
             }
           });
         });
@@ -117,7 +122,7 @@ export default function EditGarment({ route, navigation }) {
       );
     } finally {
       setUploading(false);
-      navigation.replace("Home");
+      navigation.goBack();
     }
   };
 
@@ -146,7 +151,7 @@ export default function EditGarment({ route, navigation }) {
         "Eliminar tu prenda de ropa ha fallado 😞, por favor vuelve a intentarlo."
       );
     } finally {
-      navigation.replace("Home");
+      navigation.goBack();
     }
   };
 
@@ -162,35 +167,37 @@ export default function EditGarment({ route, navigation }) {
     >
       <ActivityIndicator color="#1BB2EC" animating size="large" />
       <Text style={{ color: "#E9EDE9" }}>
-        Cambiando tu prenda del armario...
+        Cambiando tu prenda del armario...🕗
       </Text>
     </View>
   ) : (
     <View style={{ backgroundColor: "#202832", display: "flex", flex: 1 }}>
-      <TouchableOpacity
-        style={{ marginBottom: 50, alignSelf: "center", marginTop: 50 }}
-        onPress={() => setShowModal(true)}
-      >
-        <Avatar
-          rounded
-          source={{
-            uri:
-              image ||
-              "https://images.assetsdelivery.com/compings_v2/apoev/apoev1804/apoev180400145.jpg",
-          }}
-          style={{
-            height: 150,
-            width: 150,
-            borderWidth: 1,
-            borderRadius: 18,
-            borderColor: "#1BB2EC",
-          }}
-        />
-        <Text style={{ alignSelf: "center", paddingTop: 5, color: "#E9EDE9" }}>
-          Cambiar imagen
-        </Text>
-      </TouchableOpacity>
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+        <TouchableOpacity
+          style={{ marginBottom: 50, alignSelf: "center", marginTop: 50 }}
+          onPress={() => setShowModal(true)}
+        >
+          <Avatar
+            rounded
+            source={{
+              uri:
+                image ||
+                "https://images.assetsdelivery.com/compings_v2/apoev/apoev1804/apoev180400145.jpg",
+            }}
+            style={{
+              height: 150,
+              width: 150,
+              borderWidth: 1,
+              borderRadius: 18,
+              borderColor: "#1BB2EC",
+            }}
+          />
+          <Text
+            style={{ alignSelf: "center", paddingTop: 5, color: "#E9EDE9" }}
+          >
+            Cambiar imagen
+          </Text>
+        </TouchableOpacity>
         <Modal visible={showModal} animated>
           <View style={{ backgroundColor: "#606060", flex: 1 }}>
             <View
@@ -223,7 +230,7 @@ export default function EditGarment({ route, navigation }) {
                     marginTop: 10,
                   }}
                 >
-                  ¿De dónde quieres sacar la foto?
+                  ¿De dónde quieres sacar la 📷?
                 </Text>
                 <View
                   style={{
@@ -260,10 +267,15 @@ export default function EditGarment({ route, navigation }) {
           <Controller
             control={control}
             rules={{
-              required: "Introduce tu nombre",
+              required:
+                "¡No seas tan vag@! Introduce el nombre de la prenda...",
               minLength: {
                 value: 3,
-                message: "El nombre debe tener al menos 3 carácteres",
+                message: "¡Alegría! Pon al menos 3 carácteres...",
+              },
+              maxLength: {
+                value: 20,
+                message: "Tampoco te pases, con 20 carácteres vas sobrad@...",
               },
             }}
             render={({ field: { onChange, onBlur, value } }) => (

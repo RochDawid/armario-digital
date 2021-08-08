@@ -27,7 +27,7 @@ export default function App() {
             component={Register}
             options={{ headerShown: false }}
           />
-          <Stack.Screen name="Home" component={Home} />
+          <Stack.Screen name="Home" component={Home} options={{ gesturesEnabled: false }} />
           <Stack.Screen
             name="AddGarment"
             component={AddGarment}

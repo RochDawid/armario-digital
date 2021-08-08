@@ -96,7 +96,7 @@ export default function AddGarment({ navigation }) {
       );
     } finally {
       setUploading(false);
-      navigation.replace("Home");
+      navigation.goBack();
     }
   };
 
@@ -112,108 +112,115 @@ export default function AddGarment({ navigation }) {
     >
       <ActivityIndicator color="#1BB2EC" animating size="large" />
       <Text style={{ color: "#E9EDE9" }}>
-        Añadiendo tu prenda al armario...
+        Poniendo tu prenda en el armario...🕗
       </Text>
     </View>
   ) : (
     <View style={{ backgroundColor: "#202832", display: "flex", flex: 1 }}>
-      <TouchableOpacity
-        style={{ marginBottom: 50, alignSelf: "center", marginTop: 50 }}
-        onPress={() => setShowModal(true)}
-      >
-        <Avatar
-          rounded
-          source={{
-            uri:
-              image ||
-              "https://images.assetsdelivery.com/compings_v2/apoev/apoev1804/apoev180400145.jpg",
-          }}
-          style={{
-            height: 150,
-            width: 150,
-            borderWidth: 1,
-            borderRadius: 18,
-            borderColor: "#1BB2EC",
-          }}
-        />
-        <Text style={{ alignSelf: "center", paddingTop: 5, color: "#E9EDE9" }}>
-          Añadir imagen
-        </Text>
-      </TouchableOpacity>
-      <Modal visible={showModal} animated>
-        <View style={{ backgroundColor: "#606060", flex: 1 }}>
-          <View
-            style={{
-              display: "block",
-              backgroundColor: "#202832",
-              borderRadius: 15,
-              borderWidth: 3,
-              borderColor: "#1BB2EC",
-              width: 300,
-              height: 250,
-              alignSelf: "center",
-              top: 250,
-              opacity: 1,
+      <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+        <TouchableOpacity
+          style={{ marginBottom: 50, alignSelf: "center", marginTop: 50 }}
+          onPress={() => setShowModal(true)}
+        >
+          <Avatar
+            rounded
+            source={{
+              uri:
+                image ||
+                "https://images.assetsdelivery.com/compings_v2/apoev/apoev1804/apoev180400145.jpg",
             }}
+            style={{
+              height: 150,
+              width: 150,
+              borderWidth: 1,
+              borderRadius: 18,
+              borderColor: "#1BB2EC",
+            }}
+          />
+          <Text
+            style={{ alignSelf: "center", paddingTop: 5, color: "#E9EDE9" }}
           >
-            <TouchableOpacity
-              style={{ alignSelf: "flex-end", padding: 10 }}
-              onPress={() => setShowModal(false)}
+            Añadir imagen
+          </Text>
+        </TouchableOpacity>
+        <Modal visible={showModal} animated>
+          <View style={{ backgroundColor: "#606060", flex: 1 }}>
+            <View
+              style={{
+                display: "block",
+                backgroundColor: "#202832",
+                borderRadius: 15,
+                borderWidth: 3,
+                borderColor: "#1BB2EC",
+                width: 300,
+                height: 250,
+                alignSelf: "center",
+                top: 250,
+                opacity: 1,
+              }}
             >
-              <Icon name="close" color="#E9EDE9" size={35} />
-            </TouchableOpacity>
-            <View style={{ alignSelf: "center", flexDirection: "column" }}>
-              <Text
-                style={{
-                  color: "#E9EDE9",
-                  textAlign: "center",
-                  fontWeight: "bold",
-                  marginBottom: 30,
-                  marginTop: 10,
-                }}
+              <TouchableOpacity
+                style={{ alignSelf: "flex-end", padding: 10 }}
+                onPress={() => setShowModal(false)}
               >
-                ¿De dónde quieres sacar la foto?
-              </Text>
-              <View
-                style={{
-                  alignSelf: "center",
-                  flexDirection: "row",
-                  alignContent: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <TouchableOpacity
-                  style={{ marginHorizontal: 10 }}
-                  onPress={() => chooseImage(false)}
+                <Icon name="close" color="#E9EDE9" size={35} />
+              </TouchableOpacity>
+              <View style={{ alignSelf: "center", flexDirection: "column" }}>
+                <Text
+                  style={{
+                    color: "#E9EDE9",
+                    textAlign: "center",
+                    fontWeight: "bold",
+                    marginBottom: 30,
+                    marginTop: 10,
+                  }}
                 >
-                  <Icon
-                    name="camera"
-                    color="#E9EDE9"
-                    type="ionicon"
-                    size={100}
-                  />
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={{ marginHorizontal: 10 }}
-                  onPress={() => chooseImage(true)}
+                  ¿De dónde quieres sacar la 📷?
+                </Text>
+                <View
+                  style={{
+                    alignSelf: "center",
+                    flexDirection: "row",
+                    alignContent: "center",
+                    justifyContent: "center",
+                  }}
                 >
-                  <Icon name="collections" color="#E9EDE9" size={100} />
-                </TouchableOpacity>
+                  <TouchableOpacity
+                    style={{ marginHorizontal: 10 }}
+                    onPress={() => chooseImage(false)}
+                  >
+                    <Icon
+                      name="camera"
+                      color="#E9EDE9"
+                      type="ionicon"
+                      size={100}
+                    />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={{ marginHorizontal: 10 }}
+                    onPress={() => chooseImage(true)}
+                  >
+                    <Icon name="collections" color="#E9EDE9" size={100} />
+                  </TouchableOpacity>
+                </View>
               </View>
             </View>
           </View>
-        </View>
-      </Modal>
-      <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+        </Modal>
         <View style={styles.inputContainer}>
           <Text style={styles.placeholder}>Nombre*</Text>
           <Controller
             control={control}
             rules={{
-              required: "Introduce tu nombre",
+              required:
+                "¡No seas tan vag@! Introduce el nombre de la prenda...",
               minLength: {
                 value: 3,
-                message: "El nombre debe tener al menos 3 carácteres",
+                message: "¡Alegría! Pon al menos 3 carácteres...",
+              },
+              maxLength: {
+                value: 20,
+                message: "Tampoco te pases, con 20 carácteres vas sobrad@...",
               },
             }}
             render={({ field: { onChange, onBlur, value } }) => (
@@ -245,7 +252,7 @@ export default function AddGarment({ navigation }) {
           <Controller
             control={control}
             rules={{
-              required: "Introduce la marca",
+              required: "¡No seas tan vag@! Introduce la marca",
             }}
             render={({ field: { onChange, onBlur, value } }) => (
               <TextInput
@@ -276,7 +283,11 @@ export default function AddGarment({ navigation }) {
           <Controller
             control={control}
             rules={{
-              required: "Introduce el color",
+              required: "¡No seas tan vag@! Introduce el color",
+              maxLength: {
+                value: 20,
+                message: "Tampoco te pases, con 20 carácteres vas sobrad@...",
+              },
             }}
             render={({ field: { onChange, onBlur, value } }) => (
               <TextInput
@@ -316,9 +327,6 @@ export default function AddGarment({ navigation }) {
           </Text>
           <Controller
             control={control}
-            rules={{
-              required: "Introduce la marca",
-            }}
             render={({ field: { onChange, onBlur, value } }) => (
               <Switch
                 onValueChange={(value) => onChange(value)}
@@ -329,7 +337,7 @@ export default function AddGarment({ navigation }) {
               />
             )}
             name="washing"
-            defaultValue=""
+            defaultValue={false}
           />
         </View>
       </TouchableWithoutFeedback>
