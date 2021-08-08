@@ -101,25 +101,17 @@ export default function AddGarment({ navigation }) {
   };
 
   return uploading ? (
-    <View
-      style={{
-        display: "flex",
-        flex: "1",
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: "#202832",
-      }}
-    >
+    <View style={styles.uploadingContainer}>
       <ActivityIndicator color="#1BB2EC" animating size="large" />
       <Text style={{ color: "#E9EDE9" }}>
         Poniendo tu prenda en el armario...🕗
       </Text>
     </View>
   ) : (
-    <View style={{ backgroundColor: "#202832", display: "flex", flex: 1 }}>
+    <View style={styles.container}>
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
         <TouchableOpacity
-          style={{ marginBottom: 50, alignSelf: "center", marginTop: 50 }}
+          style={styles.avatarContainer}
           onPress={() => setShowModal(true)}
         >
           <Avatar
@@ -129,62 +121,24 @@ export default function AddGarment({ navigation }) {
                 image ||
                 "https://images.assetsdelivery.com/compings_v2/apoev/apoev1804/apoev180400145.jpg",
             }}
-            style={{
-              height: 150,
-              width: 150,
-              borderWidth: 1,
-              borderRadius: 18,
-              borderColor: "#1BB2EC",
-            }}
+            style={styles.avatar}
           />
-          <Text
-            style={{ alignSelf: "center", paddingTop: 5, color: "#E9EDE9" }}
-          >
-            Añadir imagen
-          </Text>
+          <Text style={styles.addImageText}>Añadir imagen</Text>
         </TouchableOpacity>
         <Modal visible={showModal} animated>
           <View style={{ backgroundColor: "#606060", flex: 1 }}>
-            <View
-              style={{
-                display: "block",
-                backgroundColor: "#202832",
-                borderRadius: 15,
-                borderWidth: 3,
-                borderColor: "#1BB2EC",
-                width: 300,
-                height: 250,
-                alignSelf: "center",
-                top: 250,
-                opacity: 1,
-              }}
-            >
+            <View style={styles.modalContainer}>
               <TouchableOpacity
-                style={{ alignSelf: "flex-end", padding: 10 }}
+                style={styles.closeContainer}
                 onPress={() => setShowModal(false)}
               >
                 <Icon name="close" color="#E9EDE9" size={35} />
               </TouchableOpacity>
-              <View style={{ alignSelf: "center", flexDirection: "column" }}>
-                <Text
-                  style={{
-                    color: "#E9EDE9",
-                    textAlign: "center",
-                    fontWeight: "bold",
-                    marginBottom: 30,
-                    marginTop: 10,
-                  }}
-                >
+              <View style={styles.modalContainer2}>
+                <Text style={styles.modalText}>
                   ¿De dónde quieres sacar la 📷?
                 </Text>
-                <View
-                  style={{
-                    alignSelf: "center",
-                    flexDirection: "row",
-                    alignContent: "center",
-                    justifyContent: "center",
-                  }}
-                >
+                <View style={styles.chooseContainer}>
                   <TouchableOpacity
                     style={{ marginHorizontal: 10 }}
                     onPress={() => chooseImage(false)}
@@ -235,16 +189,7 @@ export default function AddGarment({ navigation }) {
             defaultValue=""
           />
           {errors.category && (
-            <Text
-              style={{
-                color: "red",
-                paddingTop: 5,
-                paddingLeft: 5,
-                fontSize: 12,
-              }}
-            >
-              {errors.category.message}
-            </Text>
+            <Text style={styles.errorText}>{errors.category.message}</Text>
           )}
         </View>
         <View style={styles.inputContainer}>
@@ -266,16 +211,7 @@ export default function AddGarment({ navigation }) {
             defaultValue=""
           />
           {errors.brand && (
-            <Text
-              style={{
-                color: "red",
-                paddingTop: 5,
-                paddingLeft: 5,
-                fontSize: 12,
-              }}
-            >
-              {errors.brand.message}
-            </Text>
+            <Text style={styles.errorText}>{errors.brand.message}</Text>
           )}
         </View>
         <View style={styles.inputContainer}>
@@ -301,30 +237,11 @@ export default function AddGarment({ navigation }) {
             defaultValue=""
           />
           {errors.color && (
-            <Text
-              style={{
-                color: "red",
-                paddingTop: 5,
-                paddingLeft: 5,
-                fontSize: 12,
-              }}
-            >
-              {errors.color.message}
-            </Text>
+            <Text style={styles.errorText}>{errors.color.message}</Text>
           )}
         </View>
-        <View
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "center",
-            alignItems: "center",
-            paddingTop: 25,
-          }}
-        >
-          <Text style={{ color: "#E9EDE9", paddingRight: 10 }}>
-            ¿En la lavadora?
-          </Text>
+        <View style={styles.washingContainer}>
+          <Text style={styles.washingText}>¿En la lavadora?</Text>
           <Controller
             control={control}
             render={({ field: { onChange, onBlur, value } }) => (
@@ -343,38 +260,17 @@ export default function AddGarment({ navigation }) {
       </TouchableWithoutFeedback>
       <View>
         <TouchableOpacity
-          style={{
-            alignSelf: "center",
-            backgroundColor: "#1BB2EC",
-            borderRadius: 25,
-            marginTop: 50,
-          }}
+          style={styles.buttonsContainer}
           onPress={handleSubmit(onSubmit)}
         >
-          <View
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "center",
-              alignItems: "center",
-              padding: 5,
-            }}
-          >
+          <View style={styles.buttonsContainer2}>
             <Icon
               name="check"
               color="#E9EDE9"
               size={40}
               style={{ marginLeft: 5 }}
             />
-            <Text
-              style={{
-                color: "#E9EDE9",
-                marginHorizontal: 10,
-                fontWeight: "500",
-              }}
-            >
-              Añadir prenda
-            </Text>
+            <Text style={styles.buttonText}>Añadir prenda</Text>
           </View>
         </TouchableOpacity>
       </View>
@@ -400,5 +296,81 @@ const styles = StyleSheet.create({
     paddingBottom: 5,
     paddingLeft: 5,
     color: "#E9EDE9",
+  },
+  uploadingContainer: {
+    display: "flex",
+    flex: "1",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#202832",
+  },
+  container: { backgroundColor: "#202832", display: "flex", flex: 1 },
+  avatarContainer: { marginBottom: 50, alignSelf: "center", marginTop: 50 },
+  avatar: {
+    height: 150,
+    width: 150,
+    borderWidth: 1,
+    borderRadius: 18,
+    borderColor: "#1BB2EC",
+  },
+  addImageText: { alignSelf: "center", paddingTop: 5, color: "#E9EDE9" },
+  modalContainer: {
+    display: "block",
+    backgroundColor: "#202832",
+    borderRadius: 15,
+    borderWidth: 3,
+    borderColor: "#1BB2EC",
+    width: 300,
+    height: 250,
+    alignSelf: "center",
+    top: 250,
+    opacity: 1,
+  },
+  closeContainer: { alignSelf: "flex-end", padding: 10 },
+  modalContainer2: { alignSelf: "center", flexDirection: "column" },
+  modalText: {
+    color: "#E9EDE9",
+    textAlign: "center",
+    fontWeight: "bold",
+    marginBottom: 30,
+    marginTop: 10,
+  },
+  chooseContainer: {
+    alignSelf: "center",
+    flexDirection: "row",
+    alignContent: "center",
+    justifyContent: "center",
+  },
+  errorText: {
+    color: "red",
+    paddingTop: 5,
+    paddingLeft: 5,
+    fontSize: 12,
+  },
+  washingContainer: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    paddingTop: 25,
+  },
+  washingText: { color: "#E9EDE9", paddingRight: 10 },
+  buttonsContainer: {
+    alignSelf: "center",
+    backgroundColor: "#1BB2EC",
+    borderRadius: 25,
+    marginTop: 50,
+  },
+  buttonsContainer2: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 5,
+  },
+  buttonText: {
+    color: "#E9EDE9",
+    marginHorizontal: 10,
+    fontWeight: "500",
   },
 });
