@@ -206,7 +206,6 @@ export default function Home({ navigation }) {
 
 const styles = StyleSheet.create({
   modalContainer: {
-    display: "block",
     backgroundColor: "#202832",
     borderRadius: 15,
     borderWidth: 3,
@@ -215,7 +214,6 @@ const styles = StyleSheet.create({
     height: 250,
     alignSelf: "center",
     top: 250,
-    opacity: 1,
   },
   closeModalContainer: { alignSelf: "flex-end", padding: 10 },
   modalText: {
@@ -233,7 +231,7 @@ const styles = StyleSheet.create({
   },
   container: {
     display: "flex",
-    flex: "1",
+    flex: 1,
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#202832",
