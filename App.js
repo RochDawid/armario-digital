@@ -11,7 +11,20 @@ import EditGarment from "./src/screens/EditGarment";
 
 export default function App() {
   const Stack = createStackNavigator();
-  
+
+  const editGarmentOptions = {
+    headerTitle: "Editar prenda",
+    headerTintColor: "#E9EDE9",
+    headerStyle: { backgroundColor: "#2C3A58" },
+    headerBackTitle: "Armario",
+  };
+  const addGarmentOptions = {
+    headerTitle: "Añadir prenda",
+    headerTintColor: "#E9EDE9",
+    headerStyle: { backgroundColor: "#2C3A58" },
+    headerBackTitle: "Armario",
+  };
+
   return (
     <NavigationContainer>
       <View style={styles.container}>
@@ -27,26 +40,20 @@ export default function App() {
             component={Register}
             options={{ headerShown: false }}
           />
-          <Stack.Screen name="Home" component={Home} options={{ gesturesEnabled: false }} />
+          <Stack.Screen
+            name="Home"
+            component={Home}
+            options={{ gesturesEnabled: false }}
+          />
           <Stack.Screen
             name="AddGarment"
             component={AddGarment}
-            options={{
-              headerTitle: "Añadir prenda",
-              headerTintColor: "#E9EDE9",
-              headerStyle: { backgroundColor: "#2C3A58" },
-              headerBackTitle: "Armario",
-            }}
+            options={addGarmentOptions}
           />
           <Stack.Screen
             name="EditGarment"
             component={EditGarment}
-            options={{
-              headerTitle: "Editar prenda",
-              headerTintColor: "#E9EDE9",
-              headerStyle: { backgroundColor: "#2C3A58" },
-              headerBackTitle: "Armario",
-            }}
+            options={editGarmentOptions}
           />
         </Stack.Navigator>
       </View>
