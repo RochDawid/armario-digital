@@ -13,12 +13,12 @@ import { Icon } from "react-native-elements/dist/icons/Icon";
 import { Avatar } from "react-native-elements";
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 import { useForm, Controller } from "react-hook-form";
-import useGarmentPhoto from "../others/useGarmentPhoto";
+import useGarment from "../others/useGarment";
 import Uploading from "../components/Uploading";
 
 export default function AddGarment({ navigation }) {
   const { image, uploading, showModal, setShowModal, chooseImage, addGarment } =
-    useGarmentPhoto(navigation);
+    useGarment(navigation);
   const {
     control,
     handleSubmit,

@@ -1,25 +1,27 @@
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect } from "react";
 import {
   Text,
   View,
   TouchableOpacity,
   ScrollView,
+  SafeAreaView,
   RefreshControl,
   Modal,
   StyleSheet,
 } from "react-native";
-import { auth, storage } from "../others/firebase";
+import { auth } from "../others/firebase";
 import { Avatar } from "react-native-elements";
 import { Icon } from "react-native-elements/dist/icons/Icon";
 import Tab from "../components/Tab";
 import Garment from "../components/Garment";
 import { getClothes } from "../others/garmentService";
 import useAvatarPhoto from "../others/useAvatarPhoto";
+import useGarment from "../others/useGarment";
 
 export default function Home({ navigation }) {
-  const [clothes, setClothes] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const { image, showModal, setShowModal, chooseImage, getLatestImage } = useAvatarPhoto();
+  const { clothes, loading, setLoading, setClothes } = useGarment();
+  const { image, showModal, setShowModal, chooseImage, getLatestImage } =
+    useAvatarPhoto();
 
   const logout = () => {
     auth
@@ -117,7 +119,7 @@ export default function Home({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <ScrollView
         style={{ width: "100%" }}
         refreshControl={
@@ -144,7 +146,7 @@ export default function Home({ navigation }) {
         ))}
       </ScrollView>
       <Tab navigation={navigation} />
-    </View>
+    </SafeAreaView>
   );
 }
 

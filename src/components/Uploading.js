@@ -6,7 +6,7 @@ export default function Uploading() {
     <View style={styles.container}>
       <ActivityIndicator color="#1BB2EC" animating size="large" />
       <Text style={{ color: "#E9EDE9", paddingTop: 5, fontWeight: "600" }}>
-        Cambiando tu prenda del armario...🕗
+        Dándole un vuelco a tu armario...🕗
       </Text>
     </View>
   );
